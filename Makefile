@@ -19,7 +19,7 @@ CONFIG_DIR := $(DESTDIR)/etc/secpaver
 RESOURCE_DIR := $(DESTDIR)/var/local/secpaver
 SCRIPTS_DIR := $(DESTDIR)/usr/share/secpaver/scripts
 DATA_DIR := $(DESTDIR)/usr/share/secpaver
-SYSTEMD_DIR = $(DESTDIR)/lib/systemd/system
+SYSTEMD_DIR = $(DESTDIR)/usr/lib/systemd/system
 LOG_DIR := $(DESTDIR)/var/log/secpaver
 
 BUILDFLAGS := -trimpath
