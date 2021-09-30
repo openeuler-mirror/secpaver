@@ -1,0 +1,9 @@
+[Unit]
+Description=secPaver daenmon
+
+[Service]
+ExecStart=/usr/bin/pavd
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

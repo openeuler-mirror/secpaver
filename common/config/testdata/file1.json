@@ -1,0 +1,18 @@
+{
+  "connect": {
+    "protocol": "unix",
+    "socket":"/var/run/secpaver/pavd.sock"
+  },
+  "repository": {
+    "projects": "/var/local/secpaver/projects",
+    "engines": "/var/local/secpaver/engines",
+    "policies": "/var/local/secpaver/policies"
+  },
+  "log":{
+    "path":"",
+    "level":"info",
+    "maxFileSize": 10,
+    "maxFileNum": 20,
+    "maxFileAge": 30
+  }
+}

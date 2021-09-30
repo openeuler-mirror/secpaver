@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2020-2021. All rights reserved.
+ * secPaver is licensed under the Mulan PSL v2.
+ * You can use this software according to the terms and conditions of the Mulan PSL v2.
+ * You may obtain a copy of Mulan PSL v2 at:
+ *     http://license.coscl.org.cn/MulanPSL2
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
+ * PURPOSE.
+ * See the Mulan PSL v2 for more details.
+ */
+
+syntax = "proto3";
+
+package policy;
+
+service PolicyMgr {
+    rpc ListPolicy(Req) returns (ListPolicyAck);
+    rpc InstallPolicy(Req) returns (stream Ack);
+    rpc UninstallPolicy(Req) returns (stream Ack);
+    rpc DeletePolicy(Req) returns (Ack);
+    rpc ExportPolicy(Req) returns (ExportPolicyAck);
+}
+
+// common request message
+message Req {
+    string name = 1;
+    string engine = 2;
+}
+
+// common ack message
+message Ack {
+    string level = 1;
+    string status = 2;
+}
+
+message PolicyInfo {
+    string name = 1;
+    string status = 2;
+}
+
+// ack message of ListPolicy rpc
+message ListPolicyAck {
+    repeated PolicyInfo policyInfos = 1;
+}
+
+// PolicyZipFile zip file message
+message PolicyZipFile {
+    string filename = 1;
+    bytes data = 2;
+}
+
+// ack message of ExportPolicy rpc
+message ExportPolicyAck {
+    PolicyZipFile file = 1;
+}
