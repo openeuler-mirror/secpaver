@@ -14,8 +14,8 @@ package sehandle
 
 import (
 	"fmt"
-	"secpaver/engine/selinux/pkg/libsepol"
-	"secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libsepol"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
 )
 
 // LookupPortContext searches a port context item by port and proto

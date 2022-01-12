@@ -15,12 +15,12 @@ package builder
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/project"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/secontext"
-	"secpaver/engine/selinux/pkg/sehandle"
-	"secpaver/engine/selinux/pkg/semodule"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/project"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/sehandle"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/semodule"
 )
 
 func (f *fileItem) fileContext() *secontext.FileContext {

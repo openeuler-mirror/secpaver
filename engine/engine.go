@@ -21,10 +21,10 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"plugin"
-	"secpaver/api/proto/policy"
-	"secpaver/api/proto/project"
-	"secpaver/common/log"
-	"secpaver/domain"
+	"gitee.com/openeuler/secpaver/api/proto/policy"
+	"gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/log"
+	"gitee.com/openeuler/secpaver/domain"
 	"syscall"
 )
 

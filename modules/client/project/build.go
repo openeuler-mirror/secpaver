@@ -18,11 +18,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 	"io"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/client"
-	"secpaver/common/errdefs"
-	"secpaver/common/project"
-	"secpaver/common/utils"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/client"
+	"gitee.com/openeuler/secpaver/common/errdefs"
+	"gitee.com/openeuler/secpaver/common/project"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 func newBuildCommand() *cli.Command {

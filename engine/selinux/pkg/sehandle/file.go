@@ -13,7 +13,7 @@
 package sehandle
 
 import (
-	"secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
 	"sort"
 )
 

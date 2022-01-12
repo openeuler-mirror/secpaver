@@ -18,8 +18,8 @@ package serule
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
 	"strings"
 )
 

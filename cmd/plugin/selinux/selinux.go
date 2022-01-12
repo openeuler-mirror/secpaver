@@ -16,8 +16,8 @@ Package main is the entry of selinux engine plugin
 package main
 
 import (
-	"secpaver/engine"
-	"secpaver/engine/selinux"
+	"gitee.com/openeuler/secpaver/engine"
+	"gitee.com/openeuler/secpaver/engine/selinux"
 	"sync"
 )
 

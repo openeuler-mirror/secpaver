@@ -13,7 +13,7 @@
 package builder
 
 import (
-	"secpaver/engine/selinux/pkg/serule"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/serule"
 )
 
 var defaultAvcRulesText = []string{

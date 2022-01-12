@@ -15,10 +15,10 @@ package builder
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/project"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/serule"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/project"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/serule"
 )
 
 var capPermsDict = map[string]string{

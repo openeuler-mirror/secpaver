@@ -14,7 +14,7 @@ package serule
 
 import (
 	"fmt"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 	"sort"
 	"strings"
 )

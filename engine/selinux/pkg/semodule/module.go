@@ -15,7 +15,7 @@ package semodule
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"secpaver/engine/selinux/pkg/libsemanage"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libsemanage"
 )
 
 // ModuleStatus is the flag for SELinux policy module status

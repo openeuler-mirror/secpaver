@@ -19,9 +19,9 @@ import (
 	"archive/zip"
 	"fmt"
 	"github.com/pkg/errors"
-	"secpaver/common/config"
-	"secpaver/common/utils"
-	"secpaver/domain"
+	"gitee.com/openeuler/secpaver/common/config"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/domain"
 )
 
 var repoInstance *repo

@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
 	"strings"
 )
 

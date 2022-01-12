@@ -14,10 +14,10 @@ package service
 
 import (
 	"github.com/pkg/errors"
-	pbEngine "secpaver/api/proto/engine"
-	pbPolicy "secpaver/api/proto/policy"
-	pbProject "secpaver/api/proto/project"
-	"secpaver/common/utils"
+	pbEngine "gitee.com/openeuler/secpaver/api/proto/engine"
+	pbPolicy "gitee.com/openeuler/secpaver/api/proto/policy"
+	pbProject "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 func checkEngineReq(req *pbEngine.Req) error {

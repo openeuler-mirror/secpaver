@@ -19,7 +19,7 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"secpaver/engine/selinux/pkg/sepath"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/sepath"
 	"strings"
 )
 

@@ -18,8 +18,8 @@ import (
 	"github.com/pkg/errors"
 	"path/filepath"
 	"regexp"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/utils"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/utils"
 	"strings"
 )
 

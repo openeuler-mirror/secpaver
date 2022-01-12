@@ -14,7 +14,7 @@ package secontext
 
 import (
 	"fmt"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 // FileClass is the file type flag

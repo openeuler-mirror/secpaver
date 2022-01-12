@@ -16,9 +16,9 @@ import (
 	"context"
 	"github.com/urfave/cli"
 	"io"
-	"secpaver/api/proto/policy"
-	"secpaver/common/client"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/api/proto/policy"
+	"gitee.com/openeuler/secpaver/common/client"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 func newUninstallCommand() *cli.Command {

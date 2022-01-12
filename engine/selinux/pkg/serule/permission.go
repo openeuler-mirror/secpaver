@@ -17,7 +17,7 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"path/filepath"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 // GetAllPermissionsOfClass returns all valid permission of a SELinux class

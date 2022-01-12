@@ -22,10 +22,10 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"path/filepath"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/global"
-	"secpaver/common/log"
-	"secpaver/common/utils"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/log"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 // ParseProjectFromDir parses the project file and returns the project build information

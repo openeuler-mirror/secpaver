@@ -15,11 +15,11 @@ package builder
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/project"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/secontext"
-	"secpaver/engine/selinux/pkg/serule"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/project"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/serule"
 )
 
 // PermsSetMap is the map change secPaver permission keywords to the selinux permission set

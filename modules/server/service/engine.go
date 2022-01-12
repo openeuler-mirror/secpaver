@@ -17,9 +17,9 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
-	pbEngine "secpaver/api/proto/engine"
-	"secpaver/common/log"
-	"secpaver/engine"
+	pbEngine "gitee.com/openeuler/secpaver/api/proto/engine"
+	"gitee.com/openeuler/secpaver/common/log"
+	"gitee.com/openeuler/secpaver/engine"
 	"sync"
 )
 

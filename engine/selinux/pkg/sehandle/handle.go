@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"path/filepath"
-	"secpaver/engine/selinux/pkg/libselinux"
-	"secpaver/engine/selinux/pkg/libsepol"
-	"secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libselinux"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libsepol"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
 )
 
 const (

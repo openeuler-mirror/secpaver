@@ -19,10 +19,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/pkg/errors"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/secontext"
-	"secpaver/engine/selinux/pkg/sehandle"
-	"secpaver/engine/selinux/pkg/serule"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/sehandle"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/serule"
 )
 
 // Policy is the selinux policy profile model

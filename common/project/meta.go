@@ -16,8 +16,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	pb "secpaver/api/proto/project"
-	"secpaver/common/utils"
+	pb "gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 const (
