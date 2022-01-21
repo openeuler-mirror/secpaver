@@ -17,9 +17,9 @@ package client
 
 import (
 	"github.com/urfave/cli"
-	"secpaver/modules/client/engine"
-	"secpaver/modules/client/policy"
-	"secpaver/modules/client/project"
+	"gitee.com/openeuler/secpaver/modules/client/engine"
+	"gitee.com/openeuler/secpaver/modules/client/policy"
+	"gitee.com/openeuler/secpaver/modules/client/project"
 )
 
 // NewClientCmd returns all client commands of Pav

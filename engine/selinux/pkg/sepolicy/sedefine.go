@@ -15,7 +15,7 @@ package sepolicy
 import (
 	"bytes"
 	"fmt"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 // SeDefine is the selinux policy define statement model

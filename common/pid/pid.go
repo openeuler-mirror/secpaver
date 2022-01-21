@@ -20,7 +20,7 @@ import (
 	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
-	"secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/global"
 	"strconv"
 	"syscall"
 )

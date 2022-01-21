@@ -15,7 +15,7 @@ package builder
 import (
 	"encoding/json"
 	"fmt"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 type resourceOpt struct {

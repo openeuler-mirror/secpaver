@@ -13,7 +13,7 @@
 package project
 
 import (
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 type resourceAlias Resource

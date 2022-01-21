@@ -15,7 +15,7 @@ package project
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 	"strings"
 )
 

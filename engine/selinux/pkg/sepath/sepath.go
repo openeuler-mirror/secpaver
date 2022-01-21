@@ -15,7 +15,7 @@ Package sepath provides some of for SELinux style path.
 */
 package sepath
 
-import "secpaver/common/utils"
+import "gitee.com/openeuler/secpaver/common/utils"
 
 var metaSet = []rune{'.', '^', '$', '?', '*', '+', '|', '[', ']', '(', ')', '{', '}'}
 

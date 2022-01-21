@@ -19,11 +19,11 @@ import (
 	"github.com/urfave/cli"
 	"io/ioutil"
 	"path/filepath"
-	"secpaver/api/proto/policy"
-	"secpaver/common/client"
-	"secpaver/common/errdefs"
-	"secpaver/common/global"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/api/proto/policy"
+	"gitee.com/openeuler/secpaver/common/client"
+	"gitee.com/openeuler/secpaver/common/errdefs"
+	"gitee.com/openeuler/secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 func newExportCommand() *cli.Command {

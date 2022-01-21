@@ -1,4 +1,4 @@
-module secpaver
+module gitee.com/openeuler/secpaver
 
 go 1.11
 

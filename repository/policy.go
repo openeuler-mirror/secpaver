@@ -17,10 +17,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"secpaver/common/errdefs"
-	"secpaver/common/log"
-	"secpaver/common/utils"
-	"secpaver/domain"
+	"gitee.com/openeuler/secpaver/common/errdefs"
+	"gitee.com/openeuler/secpaver/common/log"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/domain"
 )
 
 // GetPolicyRoot returns policy store root

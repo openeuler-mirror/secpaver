@@ -20,9 +20,9 @@ import (
 	"github.com/pkg/errors"
 	"path/filepath"
 	"regexp"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/libselinux"
-	"secpaver/engine/selinux/pkg/libsemanage"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libselinux"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libsemanage"
 	"strconv"
 	"strings"
 )

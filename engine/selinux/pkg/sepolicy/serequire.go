@@ -16,8 +16,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/pkg/errors"
-	"secpaver/common/utils"
-	"secpaver/engine/selinux/pkg/serule"
+	"gitee.com/openeuler/secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/serule"
 )
 
 // SeRequire is the selinux policy require statement model

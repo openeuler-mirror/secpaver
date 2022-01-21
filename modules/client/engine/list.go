@@ -15,9 +15,9 @@ package engine
 import (
 	"context"
 	"github.com/urfave/cli"
-	"secpaver/api/proto/engine"
-	"secpaver/common/client"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/api/proto/engine"
+	"gitee.com/openeuler/secpaver/common/client"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 func newListCommand() *cli.Command {

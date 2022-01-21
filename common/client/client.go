@@ -22,7 +22,7 @@ import (
 	"github.com/urfave/cli"
 	"google.golang.org/grpc"
 	"net"
-	"secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/global"
 	"time"
 )
 

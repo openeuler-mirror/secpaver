@@ -15,7 +15,7 @@ package serule
 import (
 	"fmt"
 	"path/filepath"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 var avcRulePrefixSet = []string{

@@ -17,7 +17,7 @@ package secontext
 
 import (
 	"fmt"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/utils"
 	"strings"
 )
 

@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"github.com/urfave/cli"
 	"os"
-	"secpaver/common/global"
-	"secpaver/modules/client"
+	"gitee.com/openeuler/secpaver/common/global"
+	"gitee.com/openeuler/secpaver/modules/client"
 	"sort"
 )
 

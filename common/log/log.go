@@ -24,8 +24,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"secpaver/common/config"
-	"secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/config"
+	"gitee.com/openeuler/secpaver/common/global"
 )
 
 var rotOpt *lumberjack.Logger

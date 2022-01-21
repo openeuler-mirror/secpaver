@@ -14,10 +14,10 @@ package engine
 
 import (
 	"fmt"
-	pbPolicy "secpaver/api/proto/policy"
-	"secpaver/api/proto/project"
-	"secpaver/common/policy"
-	"secpaver/domain"
+	pbPolicy "gitee.com/openeuler/secpaver/api/proto/policy"
+	"gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/policy"
+	"gitee.com/openeuler/secpaver/domain"
 )
 
 // UnimplementedEngine is a default implement of a policy engine

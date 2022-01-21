@@ -17,9 +17,9 @@ package service
 
 import (
 	"fmt"
-	"secpaver/common/server"
-	"secpaver/engine"
-	repo "secpaver/repository"
+	"gitee.com/openeuler/secpaver/common/server"
+	"gitee.com/openeuler/secpaver/engine"
+	repo "gitee.com/openeuler/secpaver/repository"
 )
 
 // NewServerServices creates all server service inst

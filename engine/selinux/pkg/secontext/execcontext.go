@@ -13,7 +13,7 @@
 package secontext
 
 import (
-	"secpaver/engine/selinux/pkg/libselinux"
+	"gitee.com/openeuler/secpaver/engine/selinux/pkg/libselinux"
 )
 
 // GetExecContext searches exec context

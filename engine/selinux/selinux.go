@@ -16,12 +16,12 @@ Package selinux implements selinux policy engine
 package selinux
 
 import (
-	"secpaver/api/proto/policy"
-	"secpaver/api/proto/project"
-	"secpaver/domain"
-	"secpaver/engine"
-	"secpaver/engine/selinux/builder"
-	"secpaver/engine/selinux/manager"
+	"gitee.com/openeuler/secpaver/api/proto/policy"
+	"gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/domain"
+	"gitee.com/openeuler/secpaver/engine"
+	"gitee.com/openeuler/secpaver/engine/selinux/builder"
+	"gitee.com/openeuler/secpaver/engine/selinux/manager"
 )
 
 // Engine is the SELinux engine instance

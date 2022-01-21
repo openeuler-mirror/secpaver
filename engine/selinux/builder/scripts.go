@@ -17,9 +17,9 @@ import (
 	"github.com/pkg/errors"
 	"os"
 	"path/filepath"
-	"secpaver/common/global"
-	"secpaver/common/log"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/log"
+	"gitee.com/openeuler/secpaver/common/utils"
 	"text/template"
 )
 

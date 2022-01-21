@@ -15,9 +15,9 @@ package project
 import (
 	"context"
 	"github.com/urfave/cli"
-	"secpaver/api/proto/project"
-	"secpaver/common/client"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/api/proto/project"
+	"gitee.com/openeuler/secpaver/common/client"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 func newInfoCommand() *cli.Command {

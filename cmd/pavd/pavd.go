@@ -21,9 +21,9 @@ import (
 	"github.com/urfave/cli"
 	"os"
 	"path/filepath"
-	"secpaver/common/errdefs"
-	"secpaver/common/global"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/errdefs"
+	"gitee.com/openeuler/secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/utils"
 	"sort"
 )
 

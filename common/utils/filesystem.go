@@ -22,7 +22,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/global"
 	"strings"
 	"syscall"
 )

@@ -21,8 +21,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 	"io/ioutil"
-	"secpaver/common/global"
-	"secpaver/common/utils"
+	"gitee.com/openeuler/secpaver/common/global"
+	"gitee.com/openeuler/secpaver/common/utils"
 )
 
 // GlobalConfig is the global config information parsed by config file
