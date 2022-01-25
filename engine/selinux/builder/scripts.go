@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"os"
+	"sort"
 	"path/filepath"
 	"gitee.com/openeuler/secpaver/common/global"
 	"gitee.com/openeuler/secpaver/common/log"
@@ -61,6 +62,8 @@ func writeConfigFile(module string, types []string, outDir string) error {
 	}
 
 	var typeList string
+
+	sort.Strings(types)
 	for i, tp := range types {
 		if i != 0 {
 			typeList += "|"

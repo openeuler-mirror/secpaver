@@ -18,6 +18,7 @@ package sepolicy
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"github.com/pkg/errors"
 	"gitee.com/openeuler/secpaver/common/utils"
 	"gitee.com/openeuler/secpaver/engine/selinux/pkg/secontext"
@@ -218,6 +219,7 @@ loop:
 // TeText generate a string of SELinux TE file
 func (p *Policy) TeText() string {
 	var bt bytes.Buffer
+	var avcRuleSorted, typeRuleSorted []string
 
 	// write module information
 	bt.WriteString(genModuleInfo(p.Name, p.Ver))
@@ -231,6 +233,7 @@ func (p *Policy) TeText() string {
 	bt.WriteString("\n")
 
 	// write domain permissive statement
+	sort.Strings(p.PermissiveDomains)
 	for _, domain := range p.PermissiveDomains {
 		bt.WriteString(genDomainPermissive(domain))
 	}
@@ -238,12 +241,22 @@ func (p *Policy) TeText() string {
 
 	// write rules
 	for _, rule := range p.AvcRules {
-		bt.WriteString(rule.Text())
+		avcRuleSorted = append(avcRuleSorted, rule.Text())
+	}
+
+	sort.Strings(avcRuleSorted)
+	for _, line := range avcRuleSorted {
+		bt.WriteString(line)
 	}
 	bt.WriteString("\n")
 
 	for _, rule := range p.TypeRules {
-		bt.WriteString(rule.Text())
+		typeRuleSorted = append(typeRuleSorted, rule.Text())
+	}
+
+	sort.Strings(typeRuleSorted)
+	for _, line := range typeRuleSorted {
+		bt.WriteString(line)
 	}
 	bt.WriteString("\n")
 
