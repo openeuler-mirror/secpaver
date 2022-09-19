@@ -15,6 +15,7 @@ package sepolicy
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"gitee.com/openeuler/secpaver/common/utils"
 )
 
@@ -35,12 +36,24 @@ func NewSeDefine() *SeDefine {
 // Text generate a string of selinux policy define statement
 func (def *SeDefine) Text() string {
 	var buffer bytes.Buffer
-	for role, tps := range def.RoleTypeDefine {
-		buffer.WriteString(genRoleTypeDefine(role, tps))
+	var roleSorted, tpSorted []string
+
+	for role := range def.RoleTypeDefine {
+		roleSorted = append(roleSorted, role)
 	}
 
-	for tp, attrs := range def.TypeAttrDefine {
-		buffer.WriteString(genTypeAttrDefine(tp, attrs))
+	sort.Strings(roleSorted)
+	for _, role := range roleSorted {
+		buffer.WriteString(genRoleTypeDefine(role, def.RoleTypeDefine[role]))
+	}
+
+	for tp := range def.TypeAttrDefine {
+		tpSorted = append(tpSorted, tp)
+	}
+
+	sort.Strings(tpSorted)
+	for _, tp := range tpSorted {
+		buffer.WriteString(genTypeAttrDefine(tp, def.TypeAttrDefine[tp]))
 	}
 
 	return buffer.String()
@@ -79,6 +92,8 @@ func (def *SeDefine) AddTypeAttrDefine(tp, attr string) {
 
 func genRoleTypeDefine(role string, tps []string) string {
 	var buffer bytes.Buffer
+
+	sort.Strings(tps)
 	for _, tp := range tps {
 		buffer.WriteString(fmt.Sprintf("role %s types %s;\n", role, tp))
 	}
@@ -93,6 +108,7 @@ func genTypeAttrDefine(tp string, attrs []string) string {
 		buffer.WriteString(fmt.Sprintf("type %s;\n", tp))
 	} else {
 		buffer.WriteString(fmt.Sprintf("type %s", tp))
+		sort.Strings(attrs)
 		for _, attr := range attrs {
 			if attr != "" {
 				buffer.WriteString(fmt.Sprintf(", %s", attr))

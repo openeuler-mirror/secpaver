@@ -15,6 +15,7 @@ package sepolicy
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"github.com/pkg/errors"
 	"gitee.com/openeuler/secpaver/common/utils"
 	"gitee.com/openeuler/secpaver/engine/selinux/pkg/serule"
@@ -123,14 +124,17 @@ func (req *SeRequire) Text() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("require\n{\n")
 
+	sort.Strings(req.RoleRequires)
 	for _, role := range req.RoleRequires {
 		buffer.WriteString(genRoleRequireStr(role))
 	}
 
+	sort.Strings(req.TypeRequires)
 	for _, tp := range req.TypeRequires {
 		buffer.WriteString(genTypeRequireStr(tp))
 	}
 
+	sort.Strings(req.AttrRequires)
 	for _, attr := range req.AttrRequires {
 		buffer.WriteString(genAttrRequireStr(attr))
 	}
@@ -155,11 +159,26 @@ func genAttrRequireStr(attr string) string {
 
 func genClassRequireStr(cls map[string][]string) string {
 	var buffer bytes.Buffer
+	var classSorted []string
 
-	for cls, acts := range cls {
-		if len(acts) != 0 {
+	for c := range cls {
+		classSorted = append(classSorted, c)
+	}
+
+	sort.Strings(classSorted)
+	for _, c := range classSorted {
+		var finalActs []string
+		for _, act := range cls[c] {
+			if act != "" {
+				finalActs = append(finalActs, act)
+			}
+		}
+		if len(finalActs) == 0 {
+			buffer.WriteString(fmt.Sprintf("\tclass %s;\n", c))
+		} else {
+			sort.Strings(finalActs)
 			buffer.WriteString(fmt.Sprintf("\tclass %s { %s };\n",
-				cls, utils.ShowStringsWithSpace(acts)))
+				c, utils.ShowStringsWithSpace(finalActs)))
 		}
 	}
 
