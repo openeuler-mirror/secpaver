@@ -1,0 +1,152 @@
+{
+	"name": "test_rlimit",
+	"applicationList": [
+		{
+			"application": {
+				"path": "/bin/rlimit_test",
+				"user": "/root",
+				"launchers": [
+					"/bin/bash"
+				],
+				"isPermissive": false
+			},
+			"permissionList": [
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_fs"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_data"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_stack"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_core"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_rss"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_as"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_memlock"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_msgqueue"
+					],
+					"actions": [
+						"1M"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_nofile"
+					],
+					"actions": [
+						"1"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_locks"
+					],
+					"actions": [
+						"1"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_sigpending"
+					],
+					"actions": [
+						"1"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_nproc"
+					],
+					"actions": [
+						"1"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_rtprio"
+					],
+					"actions": [
+						"1"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_cpu"
+					],
+					"actions": [
+						"1"
+					]
+				},
+				{
+					"type": "rlimit",
+					"resources": [
+						"rlimit_nice"
+					],
+					"actions": [
+						"1"
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,73 @@
+{
+	"name": "test_network",
+	"applicationList": [
+		{
+			"application": {
+				"path": "/bin/network_test",
+				"user": "root",
+				"launchers": [
+					"/bin/bash"
+				],
+				"isPermissive": false
+			},
+			"permissionList": [
+				{
+					"type": "network",
+					"resources": [
+						"domain:inet,type:,protocol:,port:8080"
+					],
+					"actions": [
+						"receive",
+						"send",
+						"connect",
+						"bind",
+						"accept",
+						"listen"
+					]
+				},
+				{
+					"type": "network",
+					"resources": [
+						"domain:inet6,type:,protocol:"
+					],
+					"actions": [
+						"receive",
+						"send",
+						"connect",
+						"bind",
+						"accept",
+						"listen"
+					]
+				},
+				{
+					"type": "network",
+					"resources": [
+						"domain:unix,type:,protocol:"
+					],
+					"actions": [
+						"receive",
+						"send",
+						"connect",
+						"bind",
+						"accept",
+						"listen"
+					]
+				},
+				{
+					"type": "network",
+					"resources": [
+						"domain:netlink,type:,protocol:"
+					],
+					"actions": [
+						"receive",
+						"send",
+						"connect",
+						"bind",
+						"accept",
+						"listen"
+					]
+				}
+			]
+		}
+	]
+}

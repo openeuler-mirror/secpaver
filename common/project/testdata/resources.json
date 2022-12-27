@@ -1,0 +1,215 @@
+{
+	"macroList": [],
+	"resourceList": [
+		{
+			"type": "exec_file",
+			"path": "/bin/filesystem_test",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "exec_file",
+			"path": "/bin/capability_test",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "exec_file",
+			"path": "/bin/network_test",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "exec_file",
+			"path": "/bin/rlimit_test",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "file",
+			"path": "/resource/file",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "blk_file",
+			"path": "/resource/blk",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "chr_file",
+			"path": "/resource/chr",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "dir",
+			"path": "/resource/dir",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "dir",
+			"path": "/resource",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "exec_file",
+			"path": "/resource/exec",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "fifo_file",
+			"path": "/resource/fifo",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "lnk_file",
+			"path": "/resource/lnk",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "sock_file",
+			"path": "/resource/sock",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "all",
+			"path": "/resource/all",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "exec_file",
+			"path": "/bin/bash",
+			"extended": "",
+			"selinux": {
+				"isSysFile": true,
+				"isPrivateFile": false,
+				"type": "",
+				"domain": ""
+			},
+			"Group": ""
+		},
+		{
+			"type": "file",
+			"path": "/resource/private",
+			"extended": "",
+			"selinux": {
+				"isSysFile": false,
+				"isPrivateFile": true,
+				"type": "private_file_t",
+				"domain": ""
+			},
+			"Group": ""
+		}
+	],
+	"groupList": [
+		{
+			"name": "RESOURCE",
+			"resources": [
+				"/resource/file",
+				"/resource/blk",
+				"/resource/chr",
+				"/resource/dir",
+				"/resource",
+				"/resource/exec",
+				"/resource/fifo",
+				"/resource/lnk",
+				"/resource/sock",
+				"/resource/all",
+				"/resource/private"
+			]
+		}
+	]
+}

@@ -1,0 +1,12 @@
+{
+	"resourceList": [
+		{
+			"type": "exec_file",
+			"path": "/bin/test"
+		},
+		{
+			"type": "file",
+			"path": "resource/test"
+		}
+	]
+}

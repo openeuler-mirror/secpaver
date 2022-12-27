@@ -9,4 +9,6 @@ require (
 	github.com/urfave/cli v1.22.4
 	google.golang.org/grpc v1.28.0
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gotest.tools/v3 v3.0.2
 )
+

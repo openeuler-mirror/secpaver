@@ -1,0 +1,6 @@
+{
+	"policy": {
+		"monolithic": true
+	},
+	"extraRules": []
+}

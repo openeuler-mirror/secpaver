@@ -1,0 +1,12 @@
+{
+    "version":"1.0",
+    "name":"example",
+    "resources":"resources.json",
+    "specs":[
+        "specs/module_example.json"
+    ],
+    "selinux":{
+        "config":"selinux.json"
+    }
+}
+
