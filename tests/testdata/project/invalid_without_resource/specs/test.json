@@ -1,0 +1,33 @@
+{
+	"name": "test_filesystem",
+	"applicationList": [
+		{
+			"application": {
+				"path": "/bin/test"
+			},
+			"permissionList": [
+				{
+					"type": "filesystem",
+					"resources": [
+						"resource/test"
+					],
+					"actions": [
+						"create",
+						"read",
+						"write",
+						"append",
+						"rename",
+						"link",
+						"remove",
+						"lock",
+						"map",
+						"exec",
+						"ioctl",
+						"mounton",
+						"mount"
+					]
+				}
+			]
+		}
+	]
+}

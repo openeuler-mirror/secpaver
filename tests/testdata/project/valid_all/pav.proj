@@ -1,0 +1,15 @@
+{
+	"name": "valid_all",
+	"version": "2.0",
+	"resources": "resources.json",
+	"specs": [
+		"specs/test_filesystem.json",
+		"specs/test_capability.json",
+		"specs/test_network.json",
+		"specs/test_rlimit.json"
+	],
+    "configs": [
+        "selinux.json"
+    ]
+}
+

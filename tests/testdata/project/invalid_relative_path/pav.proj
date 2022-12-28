@@ -1,0 +1,11 @@
+{
+	"name": "invalid_undefined_resource",
+	"version": "2.0",
+	"resources": "resources.json",
+	"specs": [
+		"specs/test.json"
+	],
+	"configs": [
+	    "selinux.json"
+    ]
+}

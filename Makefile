@@ -55,6 +55,15 @@ everything: pav pavd selinux
 clean:
 	rm -rf $(BUILD_DIR)/pav*
 
+unit-test:
+	go test -race -coverpkg ./... -coverprofile=coverage.data ./...
+	go tool cover -func=coverage.data -o coverage.txt
+	go tool cover -html=coverage.data -o coverage.html
+	tail -1 coverage.txt
+
+func-test:
+	cd tests && chmod 700 *.sh && ./test.sh
+
 install:
 	@echo "BEGIN INSTALL secPaver"
 
@@ -86,3 +95,4 @@ install:
 	systemctl daemon-reload
 
 	@echo "END INSTALL secPaver"
+

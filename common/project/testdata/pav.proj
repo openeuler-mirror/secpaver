@@ -1,0 +1,11 @@
+{
+	"name": "testPrj",
+	"version": "2.0",
+	"resources": "resources.json",
+	"specs": [
+		"test.json"
+	],
+	"selinux": {
+		"config": "selinux.json"
+	}
+}

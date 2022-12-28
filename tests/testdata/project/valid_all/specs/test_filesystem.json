@@ -1,0 +1,48 @@
+{
+	"name": "test_filesystem",
+	"applicationList": [
+		{
+			"application": {
+				"path": "/bin/filesystem_test",
+				"user": "root",
+				"launchers": [
+					"/bin/bash"
+				],
+				"isPermissive": false,
+				"isUnconfined": true
+			},
+			"permissionList": [
+				{
+					"type": "filesystem",
+					"resources": [
+						"$(RESOURCE)"
+					],
+					"actions": [
+						"create",
+						"read",
+						"write",
+						"append",
+						"rename",
+						"link",
+						"remove",
+						"lock",
+						"map",
+						"exec",
+						"ioctl",
+						"mounton",
+						"mount"
+					]
+				},
+				{
+					"type": "filesystem",
+					"resources": [
+						"/bin/bash"
+					],
+					"actions": [
+						"exec"
+					]
+				}
+			]
+		}
+	]
+}
