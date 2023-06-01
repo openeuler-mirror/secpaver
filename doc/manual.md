@@ -183,8 +183,8 @@ secPaver生成安全策略包含的全部文件资源信息（包括应用程序
 
 |    一级配置项  | 二级配置项 | 三级配置项 |  类型  |   属性   |               说明              |
 | :-----------: | :------: | :----: | :------: | :---------------------------: | ------------- |
-| resourceList |   type   | N/A | string | required |   文件资源类型（详见3.3.1）    |
-|               |   path   | N/A | string | required |   文件资源路径（详见3.3.2）    |
+| resourceList |   type   | N/A | string | required |   文件资源类型（详见4.3.1）    |
+|               |   path   | N/A | string | required |   文件资源路径（详见4.3.2）    |
 | | extended | N/A | string | optional | 文件资源的扩展属性（暂不使用） |
 | | selinux | isSysFile | bool | required | SELinux策略生成有效，表示该文件是否为系统公共文件资源。如果设置为true，则继承系统默认安全上下文，否则使用用户定义的安全上下文或自动生成安全上下文。 |
 |               |            | isPrivateFile | bool   | required |      SELinux策略生成有效，isSysFile为false才可设置该项，如果设置为true，则定义文件的SELinux type时不关联file_type属性，否则关联file_type属性。根据file_type属性配置的基础策略不同，可能影响其他进程对该文件的访问权限      |
@@ -382,8 +382,8 @@ secPaver的文件类型关键字如下表，若输入为空，表示该路径对
 
 |     配置项      |    子配置项    |     类型     |   属性   |             说明              |
 | :-------------: | :------------: | :----------: | :------: | :---------------------------: |
-| applicationList |  application   |    struct    | required |   应用程序信息（详见3.4.1）   |
-|                 | permissionList | struct array | required | 应用程序权限描述（详见3.4.2） |
+| applicationList |  application   |    struct    | required |   应用程序信息（详见4.4.1）   |
+|                 | permissionList | struct array | required | 应用程序权限描述（详见4.4.2） |
 
 #### 4.4.1 应用程序信息
 
@@ -465,7 +465,7 @@ SELinux策略生成配置文件格式为json文件，建议命名为selinux.json
 |   配置项   | 子配置项   |   属性   |     类型     |                             说明                             |
 | :--------: | ---------- | :------: | :----------: | :----------------------------------------------------------: |
 | extraRules | N/A        | optional | string array |                    额外添加的SELinux规则                     |
-|   policy   | monolithic | required |     bool     | 策略生成模式，若设置为true，生成一个策略模块；若设置为false，则生成多个子策略模块和一个public策略模块（详见6.2.1） |
+|   policy   | monolithic | required |     bool     | 策略生成模式，若设置为true，生成一个策略模块；若设置为false，则生成多个子策略模块和一个public策略模块（详见6.1.1） |
 
 #### 4.5.3 SELinux策略配置文件示例
 
