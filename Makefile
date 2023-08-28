@@ -23,7 +23,7 @@ SYSTEMD_DIR = $(DESTDIR)/usr/lib/systemd/system
 LOG_DIR := $(DESTDIR)/var/log/secpaver
 
 BUILDFLAGS := -trimpath
-LDFLAGS := -w -s -buildid=IdBySecPaver -linkmode=external -extldflags=-static -extldflags=-zrelro -extldflags=-znow $(LDFLAGS)
+GO_LDFLAGS := -w -s -buildid=IdBySecPaver -linkmode=external -extldflags=-static -extldflags=-zrelro -extldflags=-znow
 
 ifeq ($(shell go help mod >/dev/null 2>&1 && echo true), true)
 export GO111MODULE=on
@@ -35,19 +35,19 @@ all: pav pavd
 selinux:
 	CGO_CFLAGS_ALLOW="-ftrapv -D_FORTIFY_SOURCE=2 -O2" CGO_CFLAGS="-fstack-protector-strong -ftrapv -D_FORTIFY_SOURCE=2 -O2" \
 	CGO_LDFALGS_ALLOW="-Wl,-z,-s,relro,now,noexecstack" CGO_LDFALGS="-Wl,-z,-s,relro,now,noexecstack" \
-	go build -buildmode=plugin $(BUILDFLAGS) -ldflags '$(LDFLAGS)' -o $(BUILD_DIR)/selinux.so cmd/plugin/selinux/*.go
+	go build -buildmode=plugin $(BUILDFLAGS) -ldflags '$(GO_LDFLAGS)' -o $(BUILD_DIR)/selinux.so cmd/plugin/selinux/*.go
 	strip $(BUILD_DIR)/selinux.so
 
 pav:
 	CGO_CFLAGS_ALLOW="-ftrapv -D_FORTIFY_SOURCE=2 -O2" CGO_CFLAGS="-fstack-protector-strong -ftrapv -D_FORTIFY_SOURCE=2 -O2" \
 	CGO_LDFALGS_ALLOW="-Wl,-z,-s,relro,now,noexecstack" CGO_LDFALGS="-Wl,-z,-s,relro,now,noexecstack" \
-	go build -buildmode=pie $(BUILDFLAGS) -ldflags '$(LDFLAGS)' -o $(BUILD_DIR)/pav cmd/pav/*.go
+	go build -buildmode=pie $(BUILDFLAGS) -ldflags '$(GO_LDFLAGS)' -o $(BUILD_DIR)/pav cmd/pav/*.go
 	strip $(BUILD_DIR)/pav
 
 pavd:
 	CGO_CFLAGS_ALLOW="-ftrapv -D_FORTIFY_SOURCE=2 -O2" CGO_CFLAGS="-fstack-protector-strong -ftrapv -D_FORTIFY_SOURCE=2 -O2" \
 	CGO_LDFALGS_ALLOW="-Wl,-z,-s,relro,now,noexecstack" CGO_LDFALGS="-Wl,-z,-s,relro,now,noexecstack" \
-	go build -buildmode=pie $(BUILDFLAGS) -ldflags '$(LDFLAGS)' -o $(BUILD_DIR)/pavd cmd/pavd/*.go
+	go build -buildmode=pie $(BUILDFLAGS) -ldflags '$(GO_LDFLAGS)' -o $(BUILD_DIR)/pavd cmd/pavd/*.go
 	strip $(BUILD_DIR)/pavd
 
 everything: pav pavd selinux
