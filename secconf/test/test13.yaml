@@ -1,0 +1,11 @@
+---
+name: "openEuler security configuration"
+version: "1"
+ima:
+  ima_is_enable: true
+  measure_is_enable: true
+  appraise_is_enable: true
+  protected_files:
+    - "/usr/bin/ls"
+...
+

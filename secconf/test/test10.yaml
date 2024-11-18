@@ -1,0 +1,8 @@
+---
+name: "openEuler security configuration"
+version: "1"
+dim:
+  dim_is_enable: 123
+...
+
+

@@ -1,0 +1,35 @@
+modsign_comm()
+{
+{{ with .Modsign }}
+    if [ ! -d /sys/firmware/efi ]; then
+        grub_path="/boot/grub2/grub.cfg"
+    else
+        grub_path="/boot/efi/EFI/openEuler/grub.cfg"
+    fi
+{{ if .Enable }}
+    grep sig_enforce $grub_path &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Kernel Module Signature Verification has been configured."
+    fi
+    cat /sys/module/module/parameters/sig_enforce | grep Y &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Kernel Module Signature Verification has been activated!"
+    else
+        echo "Kernel Module Signature Verification hasn't benn activated. Please restart to activate!"
+    fi
+{{ else }}
+    grep sig_enforce $grub_path &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Kernel Module Signature Verification is not disable."
+    fi
+    cat /sys/module/module/parameters/sig_enforce | grep N &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Kernel Module Signature Verification configuration disable!"
+    else
+        echo "Kernel Module Signature Verification is not disable. Please restart to close!"
+    fi
+{{ end }}
+    return 0
+{{ end }}
+}
+

@@ -1,0 +1,8 @@
+---
+name: "openEuler security configuration"
+version: "1"
+modsign:
+  enable: true
+...
+
+

@@ -1,0 +1,45 @@
+modsign_comm()
+{
+{{ with .Modsign }}
+    if [ ! -d /sys/firmware/efi ]; then
+        grub_path="/boot/grub2/grub.cfg"
+    else
+        grub_path="/boot/efi/EFI/openEuler/grub.cfg"
+    fi
+    grep sig_enforce $grub_path &> /dev/null
+{{ if .Enable }}
+    if [ $? -eq 0 ]; then
+        echo "Kernel module verification has been set and does not need to be set again."
+    else
+        get_usr_input "Check whether the grub.cfg file is modified to enable forcible signature verification in the kernel.【Y/N】"
+        if [ $? -eq 1 ]; then
+            sed -i '/vmlinuz/s/$/ module\.sig_enforce/' $grub_path
+            if [ $? -eq 0 ]; then
+                echo "The kernel module verification is successful when the OS is started. The verification takes effect after the OS is restarted."
+            else
+                echo "Failed to modify the grub.cfg file because the kernel module verification function is disabled."
+            fi
+        fi
+    fi
+{{ else }}
+    if [ $? -ne 0 ]; then
+        echo "The OS kernel module verification has been deleted and does not need to be deleted repeatedly."
+    else
+        get_usr_input "Check whether the grub.cfg file is modified to disable forcible signature verification in the kernel.【Y/N】"
+        if [ $? -eq 1 ]; then
+            sed -i 's/module\.sig_enforce//' $grub_path
+            if [ $? -eq 0 ]; then
+                echo "The function of verifying the kernel module during OS startup is disabled. The function takes effect after the OS is restarted."
+            else
+                echo "Failed to modify the grub.cfg file."
+            fi
+            echo "Kernel module verification is disabled during OS startup."
+        fi
+    fi
+{{ end }}
+    echo "Kernel module verification deployment completed"
+{{ else }}
+    echo "Kernel module verification is not set."
+{{ end }}
+}
+

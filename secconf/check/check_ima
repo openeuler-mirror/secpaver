@@ -1,0 +1,16 @@
+ima_comm()
+{
+{{with .IMA}}
+{{if .IMAIsEnable}}
+if [ ! -d /etc/ima/ ]; then
+    echo "The /etc/ima/ directory does not exist. Please confirm whether IMA is supported."
+    return 1
+fi
+{{else}}
+    echo "ima is not enabled."
+{{end}}
+    echo "ima check is over."
+    return 0
+{{end}}
+}
+

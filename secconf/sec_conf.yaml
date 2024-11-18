@@ -1,0 +1,39 @@
+---
+name: "openEuler security configuration"
+version: "1"
+dim:
+  dim_is_enable: true
+  protected_process:
+  - "/usr/bin/bash"
+  protected_modules:
+  - "virtio_console"
+  protect_kernel: true
+  core_func:
+    measure_log_capacity: 100
+    measure_schedule: 100
+    measure_interval: 1000
+    measure_hash: "sha256"
+    measure_pcr: 11
+    signature: true
+  monitor_func:
+    module_type: "default"
+    measure_log_capacity: 1000
+    measure_hash: "sha256"
+    measure_pcr: 12
+  baseline_is_enable: true
+secure_boot:
+  secure_boot_is_enable: true
+  anti_rollback: true
+  verbose: true
+modsign:
+  enable: true
+ima:
+  ima_is_enable: true
+  measure_is_enable: true
+  appraise_is_enable: true
+  protected_files:
+    - "/usr/bin/ls"
+...
+
+
+

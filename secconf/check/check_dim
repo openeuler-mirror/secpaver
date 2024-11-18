@@ -1,0 +1,123 @@
+dim_comm()
+{
+{{ with .Dim }}{{if .DimIsEnable}}
+    echo "Checking static baseline file..."
+    if [ ! -d /etc/dim/ ]; then
+        echo "Error! /etc/dim/ directory does not exist!"
+        return 1
+    fi
+    if [ ! -f /etc/dim/policy ]; then
+        echo "Error! The policy file /etc/dim/policy doesn't exist!"
+        return 1
+    fi
+{{range .ProtectedProcess}}
+    grep {{.}} /etc/dim/policy &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error! The policy file(/etc/dim/policy) doesn't match the configuration file"
+        return 1
+    fi
+    grep -n {{.}} /etc/dim/digest_list/* &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error! Static baseline in configuration file not established!"
+        return 1
+    fi
+{{ end }}{{range .ProtectedModules}}
+    module=`modinfo {{.}} | grep "^name:" | awk '{print $2}'`
+    grep $module /etc/dim/policy &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error! The policy file doesn't match the configuration file!"
+        return 1
+    fi
+    if [ ! -f /etc/dim/digest_list/$module.hash ]; then
+        echo "Error! Static baseline in configuration file has not established!"
+        return 1
+    fi
+{{ end }}{{ if .ProtectKernel }}
+    grep "measure obj=KERNEL_TEXT" /etc/dim/policy &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error! The policy file doesn't match the configuration file!"
+        return 1
+    fi
+{{end}}
+    echo "The static baseline file is configured correctly."
+{{ with .CoreFunc }}{{ if .MeasurePcr }}
+    echo "Checking if environment supports tpm measurement..."
+    ls /dev/tpm* &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Environment supports tpm!"
+    else
+        echo "Environment doesn't support tpm, measure_pcr configuration is invalid!"
+    fi
+{{end}}{{ if .Signature }}
+    get_usr_input "openssl is about to installed?【Y/N】"
+    if [ $? -eq 1 ]; then
+        yum install -y openssl || exit 1
+    fi
+    echo "Checking whether the certificate is configured..."
+    if [ -f /etc/keys/x509_dim.der ]; then
+        echo "The certificate is configured"
+    else
+        echo "/etc/keys/x509_dim.der doesn't exist!"
+        exit 1
+    fi
+    get_usr_input "Parse the certificate public key right now?【Y/N】"
+    if [ $? -eq 1 ]; then
+        openssl x509 -inform DER -in /etc/keys/x509_dim.der -pubkey > /etc/keys/x509_dim.pem || exit 1
+        openssl dgst -sha256 -verify /etc/keys/x509_dim.pem -signature /etc/dim/policy.sig /etc/dim/policy || exit 1
+        for file in `ls /etc/dim/digest_list/*.hash`; do
+            openssl dgst -sha256 -verify /etc/keys/x509_dim.pem -signature $file.sig $file || exit 1
+        done
+        rm -f /etc/keys/x509_dim.pem || exit 1
+        echo "The baseline file consistency check is passed."
+    else
+        echo "Skip the baseline file consistency check."
+    fi
+{{end}}{{end}}{{ if .BaselineIsEnable }}
+    echo "Checking whether the DIM kernel module is loaded"
+    lsmod | grep dim_monitor &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "dim_monitor is loaded."
+    else
+        echo "Error! dim_monitor is not loaded."
+        return 1
+    fi
+    lsmod | grep dim_core &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "dim_core is loaded"
+    else
+        echo "Error! dim_core is not loaded!"
+        return 1
+    fi
+    echo "Checking if baseline is configured..."
+    cat /sys/kernel/security/dim/monitor_ascii_runtime_measurements | wc -l | grep 2 &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error! dim_monitor has no baseline configured!"
+        return 1
+    fi
+    cat /sys/kernel/security/dim/monitor_ascii_runtime_measurements | grep -E "no static baseline|tampered" &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Error! Something wrong with dim_monitor static baseline configuration!"
+        cat /sys/kernel/security/dim/monitor_ascii_runtime_measurements | grep -E "no static baseline|tampered"
+        return 1
+    fi
+        cat /sys/kernel/security/dim/monitor_ascii_runtime_measurements | grep "" &> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Error! dim_monitor has no baseline configured!"
+        return 1
+    fi
+    cat /sys/kernel/security/dim/ascii_runtime_measurements | grep -E "no static baseline|tampered" &> /dev/null
+    if [ $? -eq 0 ]; then
+        echo "Error! Something wrong with dim_core static baseline configuration!"
+        cat /sys/kernel/security/dim/ascii_runtime_measurements | grep -E "no static baseline|tampered"
+        return 1
+    fi
+    echo "dim baseline has been established"
+{{end}}
+{{else}}
+    echo "dim is not enabled."
+{{end}}
+    echo "dim check completed！"
+    return 0
+{{end}}
+}
+

@@ -1,14 +1,13 @@
-module gitee.com/openeuler/secpaver
+module secpaver
 
-go 1.11
+go 1.21
+
+require github.com/urfave/cli v1.22.4
 
 require (
-	github.com/golang/protobuf v1.4.3
-	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.7.0
-	github.com/urfave/cli v1.22.4
-	google.golang.org/grpc v1.28.0
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0
-	gotest.tools/v3 v3.0.2
+	github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d // indirect
+	github.com/russross/blackfriday/v2 v2.0.1 // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1
 )
 

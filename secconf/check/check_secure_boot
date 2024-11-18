@@ -1,0 +1,56 @@
+secure_boot_comm()
+{
+{{ with .SecureBoot }}{{ if .SecureBootIsEnable }}
+    if [ ! -d /sys/firmware/efi ]; then
+        get_usr_input "The current system doesn't support secure boot!"
+        return 1
+    fi
+    get_usr_input "Pesign is about to be installed?【Y/N】"
+    if [ $? -eq 1 ]; then
+        yum install -y pesign || exit 1
+    fi
+    get_usr_input "Mokutil is about to be installed?【Y/N】"
+    if [ $? -eq 1 ]; then
+        yum install -y mokutil || exit 1
+    fi
+    if [ ! -f /boot/efi/EFI/secure_boot.der ]; then
+        get_usr_input "Secure Boot certificate of openeuler is about to be downloaded?【Y/N】"
+        if [ $? -eq 1 ]; then
+            wget -O /boot/efi/EFI/secure_boot.der https://www.openeuler.org/certificates/openEuler-x509ca.cer.der --no-check-certificate &> /dev/null
+            if [ $? -ne 0 ]; then
+                echo "Secure Boot cerificate download failed，Please obtain the certificate in other ways"
+                return 1
+            fi
+        else
+            echo "Please name the certificate secure_boot.der and place it in the directory /boot/efi/EFI/."
+        fi
+    fi
+    files=`find /boot/efi/EFI/ -iname "*.efi"`
+    for file in $files
+    do
+        pesigcheck -i $file -n 0 -c /boot/efi/EFI/secure_boot.der
+        if [ $? -ne 0 ]; then
+            echo "$file signature verification failed."
+            return 1
+        fi
+    done
+
+    mokutil --db | grep "Issuer: CN=CA, OU=Infra, O=openEuler, L=ShenZhen, ST=GuangDong, C=CN"
+    if [ $? -ne 0 ]; then
+        echo "The Secure Boot certificate is not imported to the DB."
+    fi
+    mokutil --sb | grep "SecureBoot enabled"
+    if [ $? -eq 0 ]; then
+        echo "Secure boot is enabled."
+    else
+        echo "Secure boot is not enabled, please enter the BIOS to enable it."
+        return 1
+    fi
+{{else}}
+    echo "secure boot is not enabled!"
+{{ end }}
+    echo "secure boot check completed!"
+    return 0
+{{ end }}
+}
+

@@ -1,0 +1,75 @@
+secure_boot_comm()
+{
+{{ with .SecureBoot }}
+{{if .SecureBootIsEnable}}
+    if [ ! -d /sys/firmware/efi ]; then
+        get_usr_input "Error! The current environment does not support secure boot."
+        return 1
+    fi
+    get_usr_input "mokutil is about to install?【Y/N】"
+    if [ $? -eq 1 ]; then
+        yum install -y mokutil || exit 1
+    fi
+    mokutil --sb | grep enabled
+    if [ $? -ne 0 ]; then
+        mokutil --db | grep "Issuer: CN=CA, OU=Infra, O=openEuler, L=ShenZhen, ST=GuangDong, C=CN"
+        if [ $? -ne 0 ]; then
+            echo "Secure boot certificate is not saved in DB!"
+            if [ -f /boot/efi/EFI/secure_boot.der ]; then
+                echo "The file already exists. Please restart and import the file to the BIOS."
+            else
+                get_usr_input "Download the openeuler secure boot certificate right now?【Y/N】"
+                if [ $? -eq 1 ]; then
+                    wget -O /boot/efi/EFI/secure_boot.der https://www.openeuler.org/certificates/openEuler-x509ca.cer.der --no-check-certificate
+                    if [ $? -ne 0 ]; then
+                        echo "Error! Certificate downloaded failed. Please obtain the certificate manually!"
+                        return 1
+                    fi
+                    echo "The certificate download is successful. Please restart later and enter the bios, then import the certificate into the DB!"
+                else
+                    echo "Please obtain the certificate manually, rename the certificate to secure_boot.der, and place it in the /boot/efi/EFI/ directory."
+                fi
+            fi
+        fi
+        echo "Please restart later and enter the BIOS to enable secure boot."
+    else
+        echo "Secure boot is enabled in the current environment."
+    fi
+{{ if .AntiRollback }}
+    get_usr_input "Whether to enable the secure boot anti-rollback?【Y/N】"
+    if [ $? -eq 1 ]; then
+        mokutil --set-sbat-policy latest
+        echo "The anti-rollback function has been set and will take effect after restarting."
+    fi
+{{ else }}
+    get_usr_input "Whether to disable the secure boot anti-rollback【Y/N】"
+    if [ $? -eq 1 ]; then
+        mokutil --set-sbat-policy delete
+        echo "The anti-rollback function has been disabled and will take effect after disabling the secure boot."
+    fi
+{{ end }}{{ if .Verbose }}
+    get_usr_input "Whether to enable the secure boot verbosity?【Y/N】"
+    if [ $? -eq 1 ]; then
+        mokutil --set-verbosity true
+        mokutil --set-fallback-verbosity true
+        echo " secure boot verbosity has been configured and will take effect after restarting."
+    fi
+{{ else }}
+    get_usr_input "Whether to disable the secure boot verbosity【Y/N】"
+    if [ $? -eq 1 ]; then
+        mokutil --set-verbosity false
+        mokutil --set-fallback-verbosity false
+        echo "secure boot verbosity has been disabled and will take effect after restarting."
+    fi
+{{ end }}
+{{ else }}
+    echo "Secure boot is not enabled."
+{{ end }}
+    echo "Secure boot configuration has been completed!"
+    return 0
+{{ else }}
+    echo "Secure boot is not configured"
+    return 0
+{{ end }}
+}
+
