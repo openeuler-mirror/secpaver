@@ -1,0 +1,10 @@
+---
+name: "openEuler security configuration"
+version: "1"
+dim:
+  dim_is_enable: true
+  protected_process:
+  - "123"
+  - ""
+  protect_kernel: true
+...
