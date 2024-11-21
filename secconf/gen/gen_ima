@@ -15,9 +15,6 @@ ima_comm()
         done
         echo "Kernel parameters set successfully"
         lsinitrd | grep etc/ima/digest_lists > /dev/null
-        if [ $? -eq 1 ]; then
-            dracut -f -e xfattr
-        fi
     }
 
     rm_kernel_param()
@@ -49,7 +46,7 @@ EOF
                 rm $file
         fi
 
-        chcon  -r object_r -t $1 $2
+        chcon -t $1 $2
 
     }
 
@@ -77,12 +74,12 @@ EOF
 {{end}}
 
 {{if .AppraiseIsEnable}}
-    kernel_param+=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata" "module.sig_enforce" "initramtmpfs")
+    kernel_param+=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata" "initramtmpfs")
     appraise_enable=true
 {{else}}
     get_usr_input "Whether to turn off IMA appraise?【Y/N】"
     if [ $? -eq 1 ]; then
-        remove_kernel_param+=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata" "module.sig_enforce")
+        remove_kernel_param+=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata")
     fi
 {{end}}
 
@@ -114,7 +111,7 @@ else
         return 0;
     fi
 
-    if $appraise_enable && $measure_enable; then
+    if [[ $appraise_enable == "true" && $measure_enable == "true" ]]; then
         echo "IMA appraise and measure have been successfully enabled!"
         obj_type=ima_all_bprm_t
         echo "appraise func=BPRM_CHECK obj_type=${obj_type}" > $(pwd)ima_policy
@@ -134,6 +131,8 @@ else
 {{range .ProtectedFiles}}
     set_selinux_type $obj_type  {{.}}
     if [ -z "$(cat $ima_policy)"]; then
+        echo "appraise func=DIGEST_LIST_CHECK appraise_type=imasig|modisg" >> $(pwd)ima_policy
+        echo "measure func=DIGEST_LIST_CHECK" >> $(pwd)ima_policy
         echo "$(pwd)ima_policy" >> $ima_policy
         rm $(pwd)ima_policy
     fi
