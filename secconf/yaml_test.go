@@ -72,7 +72,7 @@ func TestInitConfigDev(t *testing.T) {
 		{"TestInitConfigDev DIM7", args{"test/test11.yaml", &Dim_yaml{}}, true},
 		{"TestInitConfigDev DIM8", args{"test/test12.yaml", &Dim_yaml{}}, true},
 		{"TestInitConfigDev IMA1", args{"test/test13.yaml", &IMA_yaml{}}, true},
-		{"TestInitConfigDev IMA2", args{"test/test14.yaml", &IMA_yaml{}}, false},
+		{"TestInitConfigDev IMA2", args{"test/test14.yaml", &IMA_yaml{}}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

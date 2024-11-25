@@ -2,34 +2,23 @@
 name: "openEuler security configuration"
 version: "1"
 dim:
-  dim_is_enable:
-  protected_process:
-  protected_modules:
-  protect_kernel:
-  core_func:
-    measure_log_capacity:
-    measure_schedule:
-    measure_interval:
-    measure_hash:
-    measure_pcr:
-    signature:
-  monitor_func:
-    module_type:
-    measure_log_capacity:
-    measure_hash:
-    measure_pcr:
-  baseline_is_enable:
+  enable:
+  measure_list:
+  log_cap:
+  schedule:
+  interval:
+  hash:
+  core_pcr:
+  monitor_pcr:
+  signature:
+  auto_baseline:
 secure_boot:
-  secure_boot_is_enable:
+  enable:
   anti_rollback:
   verbose:
 modsign:
   enable:
 ima:
-  ima_is_enable:
-  measure_is_enable:
-  appraise_is_enable:
-  protected_files:
+  measure_list:
+  appraise_list:
 ...
-
-

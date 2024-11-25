@@ -2,9 +2,8 @@
 name: "openEuler security configuration"
 version: "1"
 dim:
-  dim_is_enable: true
-  protected_process:
-  - "123"
+  enable: true
+  measure_list:
+  - "/usr/bin/bash"
   - ""
-  protect_kernel: true
 ...

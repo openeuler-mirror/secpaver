@@ -23,35 +23,37 @@ dim_comm()
     if [ $? -eq 1 ]; then
         yum install -y dim_tools || exit 1
     fi
-{{range .ProtectedProcess}}
-    echo "Establishing static baseline：" {{.}}
-    dim_gen_baseline {{.}} -o /etc/dim/digest_list/$(basename {{.}}).hash
-    if [ $? -ne 0 ]; then
-        echo "Error! Static baseline establishment failed" {{.}}
-        return 1
-    fi
-    echo "measure obj=BPRM_TEXT path={{.}}" >> /etc/dim/policy
-{{ end }}{{range .ProtectedModules}}
-    echo "Establishing static baseline：" {{.}}
-    module=`modinfo {{.}} | grep "^name:" | awk '{print $2}'`
-    moduleFilePath=`modinfo {{.}} | grep "^filename:" | awk '{print $2}'`
-    if [ "${moduleFilePath##*.}" == "xz" ]; then
-        echo "Decompressing $moduleFilePath"
-        xz -d -k $moduleFilePath
-        moduleFilePath=${moduleFilePath%.*}
-    fi
-    dim_gen_baseline $moduleFilePath -o /etc/dim/digest_list/$module.hash
-    if [ $? -ne 0 ]; then
-        echo "Static baseline establishment failed" {{.}}
-        return 1
-    fi
-    echo "measure obj=MODULE_TEXT name=$module" >> /etc/dim/policy
-{{ end }}{{ if .ProtectKernel }}
-    echo "measure obj=KERNEL_TEXT" >> /etc/dim/policy
-    dim_gen_baseline -k "$(uname -r)" -o /etc/dim/digest_list/test.hash /boot/vmlinuz-6*
-    if [ $? -ne 0 ]; then
-        echo "Kernel static baseline establishment failed"
-        return 1
+{{range .MeasureList}}
+    if [ -f "{{.}}" ] ; then
+        echo "Establishing static baseline：" {{.}}
+        dim_gen_baseline {{.}} -o /etc/dim/digest_list/$(basename {{.}}).hash
+        if [ $? -ne 0 ]; then
+            echo "Error! Static baseline establishment failed" {{.}}
+            return 1
+        fi
+        echo "measure obj=BPRM_TEXT path={{.}}" >> /etc/dim/policy
+    elif [ "{{.}}" == "kernel" ]; then
+        echo "measure obj=KERNEL_TEXT" >> /etc/dim/policy
+        dim_gen_baseline -k "$(uname -r)" -o /etc/dim/digest_list/test.hash /boot/vmlinuz-6*
+        if [ $? -ne 0 ]; then
+            echo "Kernel static baseline establishment failed"
+            return 1
+        fi
+    else
+        echo "Establishing static baseline：" {{.}}
+        module=`modinfo {{.}} | grep "^name:" | awk '{print $2}'`
+        moduleFilePath=`modinfo {{.}} | grep "^filename:" | awk '{print $2}'`
+        if [ "${moduleFilePath##*.}" == "xz" ]; then
+            echo "Decompressing $moduleFilePath"
+            xz -d -k $moduleFilePath
+            moduleFilePath=${moduleFilePath%.*}
+        fi
+        dim_gen_baseline $moduleFilePath -o /etc/dim/digest_list/$module.hash
+        if [ $? -ne 0 ]; then
+            echo "Static baseline establishment failed" {{.}}
+            return 1
+        fi
+        echo "measure obj=MODULE_TEXT name=$module" >> /etc/dim/policy
     fi
 {{ end }}
     if [ ! -f /etc/dim/policy ]; then
@@ -70,8 +72,7 @@ dim_comm()
         echo "Exit dim configuration"
         return 1
     fi
-
-{{ with .CoreFunc }}{{if .Signature}}
+{{if .Signature}}
     get_usr_input "openssl is about to install?【Y/N】"
     if [ $? -eq 1 ]; then
         yum install -y openssl || exit 1
@@ -109,7 +110,7 @@ dim_comm()
     if [ $? -eq 1 ]; then
         modprobe dim_core measure_log_capacity={{.MeasureLogCapacity}} \
             measure_hash={{.MeasureHash}} \
-            measure_pcr={{.MeasurePcr}} \
+            measure_pcr={{.CorePcr}} \
             measure_schedule={{.MeasureSchedule}} \
             signature={{.Signature}} \
             measure_interval={{.MeasureInterval}}
@@ -120,11 +121,10 @@ dim_comm()
             return 1
         fi
     fi
-{{end}}{{ with .MonitorFunc }}
     get_usr_input "dim_monitor is about to load?【Y/N】"
     if [ $? -eq 1 ]; then
         modprobe dim_monitor measure_hash={{.MeasureHash}} \
-            measure_pcr={{.MeasurePcr}} \
+            measure_pcr={{.MonitorPcr}} \
             measure_log_capacity={{.MeasureLogCapacity}}
         if [ $? -eq 0 ]; then
             echo "dim_monitor loaded successfully!"
@@ -134,7 +134,6 @@ dim_comm()
             return 1
         fi
     fi
-{{end}}
 {{ if .BaselineIsEnable }}
     get_usr_input "Dynamic baseline will be established?【Y/N】"
     if [ $? -eq 1 ]; then

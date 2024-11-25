@@ -1,16 +1,19 @@
 ima_comm()
 {
 {{with .IMA}}
-{{if .IMAIsEnable}}
+{{ if and (eq (len .MeasureList) 0) (eq (len .AppraiseList) 0) }}
+echo "IMA is not enabled!"
+{{else}}
 if [ ! -d /etc/ima/ ]; then
     echo "The /etc/ima/ directory does not exist. Please confirm whether IMA is supported."
     return 1
 fi
-{{else}}
-    echo "ima is not enabled."
+if [[ "$(getenforce)" == "Disabled" ]]; then
+    echo "IMA requires selinux to protect specific files. Please make sure selinux is enabled!"
+    return 1
+fi
 {{end}}
-    echo "ima check is over."
-    return 0
+echo "IMA check completed!"
 {{end}}
 }
 
