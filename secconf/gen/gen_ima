@@ -1,149 +1,179 @@
 ima_comm()
 {
-{{with .IMA}}{{if .IMAIsEnable}}
-    if [ -d /sys/firmware/efi ]; then
-        grub_path=/boot/efi/EFI/openeuler/grub.cfg
-    else
-        grub_path=/boot/grub2/grub.cfg
+{{with .IMA}}
+measure_list=()
+appraise_list=()
+common_list=()
+
+{{range .AppraiseList}}
+appraise_list+=({{.}})
+{{end}}
+
+{{range .MeasureList}}
+measure_list+=({{.}})
+{{end}}
+
+needReboot=false
+packages=("ima-evm-utils" "digest-list-tools")
+for pkg in "${packages[@]}"; do
+    get_usr_input "${pkg} is about to installed?【Y/N】"
+    if [ $? -eq 1 ]; then
+        yum install -y ${pkg} || exit 1
     fi
-    set_kernel_param()
-    {
-        for param in "${@}"; do
-            if ! grep -q "${param}" "${grub_path}"; then
-                sed -i "/vmlinuz/ s/$/ ${param}/" "${grub_path}"
-            fi
-        done
-        echo "Kernel parameters set successfully"
-        lsinitrd | grep etc/ima/digest_lists > /dev/null
-    }
+done
 
-    rm_kernel_param()
-    {
+if [ -d /sys/firmware/efi ]; then
+    grub_path=/boot/efi/EFI/openeuler/grub.cfg
+else
+    grub_path=/boot/grub2/grub.cfg
+fi
 
-    	for param in "${@}"; do
-    		if grep -q "${param}" "${grub_path}"; then
-    			sed -i "s/ \<${param}\>//g" ${grub_path}
-    		fi
-    	done
+rm_kernel_param()
+{
+    for param in "${@}"; do
+        cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
+        grub_contains_param=$(grep -q "${param}" "${grub_path}" && echo "true" || echo "false")
+	if [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "true" ]]; then
+	    sed -i "s/ \<${param}\>//g" ${grub_path}
+	    needReboot=true
+	elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
+	    sed -i "s/ \<${param}\>//g" ${grub_path}
+	elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
+	    needReboot=true
+	fi
+    done
+}
 
-    }
+set_kernel_param()
+{
+    for param in "${@}"; do
+        cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
+        grub_contains_param=$(grep -q "${param}" "${grub_path}" && echo "true" || echo "false")
+        if [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "false" ]]; then
+            sed -i "/vmlinuz/ s/$/ ${param}/" "${grub_path}"
+            needReboot=true
+        elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
+            sed -i "/vmlinuz/ s/$/ ${param}/" "${grub_path}"
+        elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
+            needReboot=true
+        fi
+    done
+}
+
+appraise_param=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata")
+measure_param=("ima_digest_list_pcr=11" "ima_template=ima-ng")
+
+if [[ ${#appraise_list[@]} -eq 0 && ${#measure_list[@]} -eq 0 ]]; then
+    rm_kernel_param "${appraise_param[@]}"
+    rm_kernel_param "${measure_param[@]}"
+elif [[ ${#appraise_list[@]} -gt 0 && ${#measure_list[@]} -gt 0 ]]; then
+    set_kernel_param "${appraise_param[@]}"
+    set_kernel_param "${measure_param[@]}"
+elif [[ ${#appraise_list[@]} -gt 0 ]]; then
+    rm_kernel_param "${measure_param[@]}"
+    set_kernel_param "${appraise_param[@]}"
+else
+    rm_kernel_param "${appraise_param[@]}"
+    set_kernel_param "${measure_param[@]}"
+fi
+
+if [[ $needReboot == "true" ]]; then
+    echo "IMA startup parameters have been configured! It will take effect by rebooting"
+    return 0
+fi
 
 
-    set_selinux_type()
-    {
-        module_name=$(echo "$1" | awk -F'_' '{print $1 "_" $2}')
-    	semodule -l | grep $module_name > /dev/null
-    	if [ $? -eq 1 ]; then
-    		file=$module_name.cil
-    		cat <<EOF > $file
+set_selinux_type()
+{
+    module_name=$(echo "$1" | awk -F'_' '{print $1 "_" $2}')
+    semodule -l | grep $module_name > /dev/null
+    if [ $? -eq 1 ]; then
+        file=/tmp/${module_name}.cil
+        cat <<EOF > $file
 (type $1)
 (roletype object_r $1)
 (typeattributeset file_type ($1))
 (allow domain $1 (file (append execmod ioctl mounton relabelfrom swapon watch_reads audit_access execute link open relabelto unlink watch_sb create execute_no_trans lock quotaon rename watch watch_with_perm entrypoint getattr map read setattr watch_mount write)))
 EOF
-            semodule -i $file
-            echo "selinux type $1 has been successfully created"
-                rm $file
-        fi
 
-        chcon -t $1 $2
-
-    }
-
-    kernel_param=()
-    remove_kernel_param=()
-    appraise_enable=false
-    measure_enable=false
-    set_flag=false
-    remove_flag=false
-    packages=("ima-evm-utils" "digest-list-tools")
-    for pkg in "${packages[@]}"; do
-            get_usr_input "${pkg} is about to installed?【Y/N】"
-            if [ $? -eq 1 ]; then
-                yum install -y ${pkg} || exit 1
-            fi
-    done
-{{if .MeasureIsEnable}}
-    kernel_param+=("ima_digest_list_pcr=11" "ima_template=ima-ng" "initramtmpfs")
-    measure_enable=true
-{{else}}
-    get_usr_input "Whether to turn off IMA measure?【Y/N】"
-    if [ $? -eq 1 ]; then
-        remove_kernel_param+=("ima_digest_list_pcr=11" "ima_template=ima-ng")
+	semodule -i $file
+        echo "selinux type $1 has been successfully created"
+	rm $file
     fi
-{{end}}
-
-{{if .AppraiseIsEnable}}
-    kernel_param+=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata" "initramtmpfs")
-    appraise_enable=true
-{{else}}
-    get_usr_input "Whether to turn off IMA appraise?【Y/N】"
-    if [ $? -eq 1 ]; then
-        remove_kernel_param+=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata")
-    fi
-{{end}}
-
-echo "Checking the IMA startup parameters..."
-for param in "${kernel_param[@]}"; do
-    if ! grep -q "${param}" /proc/cmdline ; then
-        set_flag=true
-        break
-    fi
-done
-
-for param in "${remove_kernel_param[@]}"; do
-    if grep -q "${param}" /proc/cmdline ; then
-        remove_flag=true
-        break
-    fi
-done
-
-if [[ $set_flag == "true" || $remove_flag == "true" ]]; then
-    echo "Setting the IMA startup parameters..."
-    set_kernel_param "${kernel_param[@]}"
-    rm_kernel_param "${remove_kernel_param[@]}"
-    echo "IMA digest configuration need to be restart the system to take effect"
-    echo "Please restart the system later"
-else
-    ima_policy=/sys/kernel/security/ima/policy
-    if [ ! -z "$(cat $ima_policy)" ]; then
-        echo "ima policy has been configured! It needs to restart to  overridei policy."
-        return 0;
-    fi
-
-    if [[ $appraise_enable == "true" && $measure_enable == "true" ]]; then
-        echo "IMA appraise and measure have been successfully enabled!"
-        obj_type=ima_all_bprm_t
-        echo "appraise func=BPRM_CHECK obj_type=${obj_type}" > $(pwd)ima_policy
-        echo "measure func=BPRM_CHECK obj_type=${obj_type}" >> $(pwd)ima_policy
-    elif $appraise_enable; then
-        obj_type=ima_appraise_bprm_t
-        echo "appraise func=BPRM_CHECK obj_type=${obj_type}" > $(pwd)ima_policy
-        echo "IMA appraise is successfully enabled!"
-    elif $measure_enable; then
-        obj_type=ima_measure_bprm_t
-        echo "measure func=BPRM_CHECK obj_type=${obj_type}" > $(pwd)ima_policy
-        echo "IMA measure is successfully enabled!"
-    else
-        echo "IMA has been disabled successfully!"
-        return 0
-    fi
-{{range .ProtectedFiles}}
-    set_selinux_type $obj_type  {{.}}
-    if [ -z "$(cat $ima_policy)"]; then
-        echo "appraise func=DIGEST_LIST_CHECK appraise_type=imasig|modisg" >> $(pwd)ima_policy
-        echo "measure func=DIGEST_LIST_CHECK" >> $(pwd)ima_policy
-        echo "$(pwd)ima_policy" >> $ima_policy
-        rm $(pwd)ima_policy
-    fi
-    echo "Successfully turned on IMA protection for {{.}}"
-fi
-{{end}}
-    return 0
-{{else}}
-    echo "IMA is not configured."
-    return 0
-{{end}}
-{{end}}
+    chcon -t $1 $2
 }
 
+unique() {
+    echo "$@" | tr ' ' '\n' | sort -u | tr '\n' ' '
+}
+
+common_elements() {
+    comm -12 <(printf "%s\n" "$1" | sort) <(printf "%s\n" "$2" | sort)
+}
+
+remove_common() {
+    grep -Fvxf <(echo "$2") <(echo "$1")
+}
+
+unique_appraise_list=($(unique "${appraise_list[@]}"))
+unique_measure_list=($(unique "${measure_list[@]}"))
+common_list=($(common_elements "${unique_appraise_list[*]}" "${unique_measure_list[*]}"))
+appraise_list=($(remove_common "${unique_appraise_list[*]}" "${common_list[*]}"))
+measure_list=($(remove_common "${unique_measure_list[*]}" "${common_list[*]}"))
+
+measure_type=ima_measure_bprm_t
+appraise_type=ima_appraise_bprm_t
+all_type=ima_all_bprm_t
+
+for measure_file in "${measure_list[@]}"; do
+    set_selinux_type $measure_type $measure_file
+done
+
+for appraise_file in "${appraise_list[@]}"; do
+    set_selinux_type $appraise_type $appraise_file
+done
+
+for common_file in "${common_list[@]}"; do
+    set_selinux_type $all_type $common_file
+done
+
+ima_policy=/sys/kernel/security/ima/policy
+if [ ! -z "$(cat $ima_policy)" ]; then
+    echo "IMA policy has been configured! It needs to restart to overwrite policy."
+    return 0
+fi
+
+tmp_policy=/tmp/ima_policy
+if [ -f $tmp_policy ]; then
+    rm $tmp_policy
+fi
+
+if [[ ${#common_list[@]} -gt 0 || ${#appraise_list[@]} -gt 0 ]]; then
+    echo "appraise func=DIGEST_LIST_CHECK appraise_type=imasig|modsig" >> $tmp_policy
+    echo "IMA appraise has been successfully enabled!"
+fi
+
+if [[ ${#common_list[@]} -gt 0 || ${#measure_list[@]} -gt 0 ]]; then
+    echo "measure func=DIGEST_LIST_CHECK" >> $tmp_policy
+    echo "IMA measure has been successfully enabled!"
+fi
+
+if [[ ${#common_list[@]} -gt 0 ]]; then
+    echo "appraise func=BPRM_CHECK obj_type=${all_type}" >> $tmp_policy
+    echo "measure func=BPRM_CHECK obj_type=${all_type}" >> $tmp_policy
+fi
+
+if [[ ${#measure_list[@]} -gt 0 ]]; then
+    echo "measure func=BPRM_CHECK obj_type=${measure_type}" >> $tmp_policy
+fi
+
+if [[ ${#appraise_list[@]} -gt 0 ]]; then
+    echo "appraise func=BPRM_CHECK obj_type=${appraise_type}" >> $tmp_policy
+fi
+
+echo $tmp_policy >> $ima_policy
+rm $tmp_policy
+
+
+{{end}}
+}

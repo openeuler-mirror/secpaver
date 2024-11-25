@@ -2,9 +2,7 @@
 name: "openEuler security configuration"
 version: "1"
 secure_boot:
-  secure_boot_is_enable: true
+  enable: true
   anti_rollback: true
   verbose: true
 ...
-
-

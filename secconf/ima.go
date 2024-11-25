@@ -12,10 +12,8 @@ type IMA_yaml struct {
 }
 
 type IMA struct {
-	IMAIsEnable      bool     `default:"false" yaml:"ima_is_enable"`
-	MeasureIsEnable  bool     `default:"false" yaml:"measure_is_enable"`
-	AppraiseIsEnable bool     `default:"false" yaml:"appraise_is_enable"`
-	ProtectedFiles   []string `yaml:"protected_files"`
+	MeasureList  []string `yaml:"measure_list"`
+	AppraiseList []string `yaml:"appraise_list"`
 }
 
 func init() {
@@ -28,16 +26,20 @@ func init() {
 
 func (config *IMA_yaml) checkTheValidity() bool {
 	ima := config.IMA
-	if ima.IMAIsEnable && (ima.MeasureIsEnable || ima.AppraiseIsEnable) {
-		for _, file := range ima.ProtectedFiles {
-			_, err := os.Stat(file)
-			if err != nil {
-				fmt.Printf("file %s does not exist!\n\n", file)
-				return false
-			}
+	for _, file := range ima.MeasureList {
+		_, err := os.Stat(file)
+		if err != nil {
+			fmt.Printf("file %s does not exist!\n", file)
+			return false
 		}
 	}
-
+	for _, file := range ima.AppraiseList {
+		_, err := os.Stat(file)
+		if err != nil {
+			fmt.Printf("file %s does not exist!\n", file)
+			return false
+		}
+	}
 	return true
 
 }

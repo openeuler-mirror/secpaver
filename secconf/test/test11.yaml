@@ -2,8 +2,8 @@
 name: "openEuler security configuration"
 version: "1"
 dim:
-  dim_is_enable: true
-  protected_process:
+  enable: true
+  measure_list:
   - "/usr/bin/bash"
   - ""
   - ""
@@ -1733,33 +1733,23 @@ dim:
   - ""
   - ""
   - ""
-  protected_modules:
-  - "dim_core"
-  protect_kernel: true
-  core_func:
-    measure_log_capacity: 100
-    measure_schedule: 100
-    measure_interval: 1000
-    measure_hash: "sha256"
-    measure_pcr: 11
-    signature: true
-  monitor_func:
-    module_type: "default"
-    measure_log_capacity: 1000
-    measure_hash: "sha256"
-    measure_pcr: 12
-  baseline_is_enable: true
+  log_cap: 100
+  schedule: 100
+  interval: 1000
+  hash: "sha256"
+  core_pcr: 11
+  monitor_pcr: 12
+  signature: true
+  auto_baseline: true
 secure_boot:
-  secure_boot_is_enable: true
+  enable: true
   anti_rollback: true
   verbose: true
 modsign:
   enable: true
 ima:
-  ima_is_enable: true
-  measure_is_enable: true
-  appraise_is_enable: true
-  protected_files:
+  measure_list:
     - "/usr/bin/ls"
+  appraise_list:
     - "/usr/bin/sleep"
 ...

@@ -2,6 +2,7 @@
 name: "openEuler security configuration"
 version: "1"
 dim:
-  dim_is_enable: true
-  protect_kernel: true
+  enable: true
+  measure_list:
+  - "kernel"
 ...

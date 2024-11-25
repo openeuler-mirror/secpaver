@@ -10,37 +10,43 @@ dim_comm()
         echo "Error! The policy file /etc/dim/policy doesn't exist!"
         return 1
     fi
-{{range .ProtectedProcess}}
-    grep {{.}} /etc/dim/policy &> /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Error! The policy file(/etc/dim/policy) doesn't match the configuration file"
-        return 1
-    fi
-    grep -n {{.}} /etc/dim/digest_list/* &> /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Error! Static baseline in configuration file not established!"
-        return 1
-    fi
-{{ end }}{{range .ProtectedModules}}
-    module=`modinfo {{.}} | grep "^name:" | awk '{print $2}'`
-    grep $module /etc/dim/policy &> /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Error! The policy file doesn't match the configuration file!"
-        return 1
-    fi
-    if [ ! -f /etc/dim/digest_list/$module.hash ]; then
-        echo "Error! Static baseline in configuration file has not established!"
-        return 1
-    fi
-{{ end }}{{ if .ProtectKernel }}
-    grep "measure obj=KERNEL_TEXT" /etc/dim/policy &> /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Error! The policy file doesn't match the configuration file!"
-        return 1
+{{range .MeasureList}}
+    if [ -f "{{.}}" ] ; then
+        grep {{.}} /etc/dim/policy &> /dev/null
+        if [ $? -ne 0 ]; then
+            echo "Error! The policy file(/etc/dim/policy) doesn't match the configuration file"
+            return 1
+        fi
+        grep -n {{.}} /etc/dim/digest_list/* &> /dev/null
+        if [ $? -ne 0 ]; then
+            echo "Error! Static baseline in configuration file not established!"
+            return 1
+        fi
+    elif [ "{{.}}" == "kernel" ]; then
+        grep "measure obj=KERNEL_TEXT" /etc/dim/policy &> /dev/null
+        if [ $? -ne 0 ]; then
+            echo "Error! The policy file doesn't match the configuration file!"
+            return 1
+        fi
+    else
+        module=`modinfo {{.}} | grep "^name:" | awk '{print $2}'`
+        if [ "$module" == "" ]; then
+            echo "Error! The policy file doesn't match the configuration file!"
+            return 1
+        fi
+        grep $module /etc/dim/policy &> /dev/null
+        if [ $? -ne 0 ]; then
+            echo "Error! The policy file doesn't match the configuration file!"
+            return 1
+        fi
+        if [ ! -f /etc/dim/digest_list/$module.hash ]; then
+            echo "Error! Static baseline in configuration file has not established!"
+            return 1
+        fi
     fi
 {{end}}
     echo "The static baseline file is configured correctly."
-{{ with .CoreFunc }}{{ if .MeasurePcr }}
+{{ if .CorePcr }}
     echo "Checking if environment supports tpm measurement..."
     ls /dev/tpm* &> /dev/null
     if [ $? -eq 0 ]; then
@@ -72,7 +78,7 @@ dim_comm()
     else
         echo "Skip the baseline file consistency check."
     fi
-{{end}}{{end}}{{ if .BaselineIsEnable }}
+{{end}}{{ if .BaselineIsEnable }}
     echo "Checking whether the DIM kernel module is loaded"
     lsmod | grep dim_monitor &> /dev/null
     if [ $? -eq 0 ]; then

@@ -11,7 +11,7 @@ type SecureBootYaml struct {
 }
 
 type SecureBoot struct {
-	SecureBootIsEnable bool `default:"false" yaml:"secure_boot_is_enable"`
+	SecureBootIsEnable bool `default:"false" yaml:"enable"`
 	AntiRollback       bool `default:"false" yaml:"anti_rollback"`
 	Verbose            bool `default:"false" yaml:"verbose"`
 }

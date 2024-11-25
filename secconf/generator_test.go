@@ -13,10 +13,8 @@ func testInit() {
 	dim := Dim_yaml{}
 	dim.templatePath = "gen/gen_dim"
 	dim.templatePathCheck = "check/check_dim"
-	dim.CoreFunc.MeasureHash = "sha256"
-	dim.MonitorFunc.MeasureHash = "sha256"
-	dim.MonitorFunc.MeasureLogCapacity = 100000
-	dim.CoreFunc.MeasureLogCapacity = 100000
+	dim.MeasureHash = "sha256"
+	dim.MeasureLogCapacity = 100000
 	var config GeneratorInterface = &dim
 	AppendSecConfig(config, "dim_comm", "dim_comm")
 	secureBoot := SecureBootYaml{}
