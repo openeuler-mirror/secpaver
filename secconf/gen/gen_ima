@@ -108,11 +108,11 @@ unique() {
 }
 
 common_elements() {
-    comm -12 <(printf "%s\n" "$1" | sort) <(printf "%s\n" "$2" | sort)
+    comm -12 <(printf "%s\n" $1 | sort) <(printf "%s\n" $2 | sort)
 }
 
 remove_common() {
-    grep -Fvxf <(echo "$2") <(echo "$1")
+    grep -Fvxf <(printf "%s\n" $2) <(printf "%s\n" $1)
 }
 
 unique_appraise_list=($(unique "${appraise_list[@]}"))
@@ -120,7 +120,10 @@ unique_measure_list=($(unique "${measure_list[@]}"))
 common_list=($(common_elements "${unique_appraise_list[*]}" "${unique_measure_list[*]}"))
 appraise_list=($(remove_common "${unique_appraise_list[*]}" "${common_list[*]}"))
 measure_list=($(remove_common "${unique_measure_list[*]}" "${common_list[*]}"))
-
+if [[ ${#common_list[@]} -eq 0 && ${#appraise_list[@]} -eq 0 && ${#measure_list[@]} -eq 0 ]]; then
+    echo "IMA is disabled!"
+    return 0
+fi
 measure_type=ima_measure_bprm_t
 appraise_type=ima_appraise_bprm_t
 all_type=ima_all_bprm_t
@@ -147,6 +150,8 @@ tmp_policy=/tmp/ima_policy
 if [ -f $tmp_policy ]; then
     rm $tmp_policy
 fi
+
+
 
 if [[ ${#common_list[@]} -gt 0 || ${#appraise_list[@]} -gt 0 ]]; then
     echo "appraise func=DIGEST_LIST_CHECK appraise_type=imasig|modsig" >> $tmp_policy
