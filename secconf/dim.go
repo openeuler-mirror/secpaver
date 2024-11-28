@@ -15,12 +15,12 @@ type Dim struct {
 	DimIsEnable        bool     `default:"false" yaml:"enable"`
 	MeasureList        []string `yaml:"measure_list"`
 	BaselineIsEnable   bool     `default:"false" yaml:"auto_baseline"`
-	MeasureLogCapacity uint64   `default:"100000" yaml:"log_cap"`
+	MeasureLogCapacity uint32   `default:"100000" yaml:"log_cap"`
 	MeasureHash        string   `default:"sha256" yaml:"hash"`
 	CorePcr            uint16   `default:"0" yaml:"core_pcr"`
 	MonitorPcr         uint16   `default:"0" yaml:"monitor_pcr"`
-	MeasureSchedule    uint64   `default:"0" yaml:"schedule"`
-	MeasureInterval    uint64   `default:"0" yaml:"interval"`
+	MeasureSchedule    uint32   `default:"0" yaml:"schedule"`
+	MeasureInterval    uint32   `default:"0" yaml:"interval"`
 	Signature          bool     `default:"false" yaml:"signature"`
 }
 

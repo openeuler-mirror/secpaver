@@ -1,9 +1,9 @@
 dim_comm()
 {
 {{ with .Dim }}{{if .DimIsEnable}}
-    get_usr_input "dim is about to install?【Y/N】"
+    check_rpm_package dim
     if [ $? -eq 1 ]; then
-        yum install -y dim || exit 1
+        return 1
     fi
     get_usr_input "New static baseline file and policy will be created at /etc/dim?【Y/N】"
     if [ $? -eq 1 ]; then
@@ -19,14 +19,15 @@ dim_comm()
         return 1
     fi
 
-    get_usr_input "dim_tools is about to install?【Y/N】"
+    check_rpm_package dim_tools
     if [ $? -eq 1 ]; then
-        yum install -y dim_tools || exit 1
+        return 1
     fi
+    dimHash={{.MeasureHash}}
 {{range .MeasureList}}
     if [ -f "{{.}}" ] ; then
         echo "Establishing static baseline：" {{.}}
-        dim_gen_baseline {{.}} -o /etc/dim/digest_list/$(basename {{.}}).hash
+        dim_gen_baseline {{.}} -o /etc/dim/digest_list/$(basename {{.}}).hash -a $dimHash
         if [ $? -ne 0 ]; then
             echo "Error! Static baseline establishment failed" {{.}}
             return 1
@@ -34,7 +35,7 @@ dim_comm()
         echo "measure obj=BPRM_TEXT path={{.}}" >> /etc/dim/policy
     elif [ "{{.}}" == "kernel" ]; then
         echo "measure obj=KERNEL_TEXT" >> /etc/dim/policy
-        dim_gen_baseline -k "$(uname -r)" -o /etc/dim/digest_list/test.hash /boot/vmlinuz-6*
+        dim_gen_baseline -k "$(uname -r)" -o /etc/dim/digest_list/kernel.hash /boot/vmlinuz-6* -a $dimHash
         if [ $? -ne 0 ]; then
             echo "Kernel static baseline establishment failed"
             return 1
@@ -48,7 +49,7 @@ dim_comm()
             xz -d -k $moduleFilePath
             moduleFilePath=${moduleFilePath%.*}
         fi
-        dim_gen_baseline $moduleFilePath -o /etc/dim/digest_list/$module.hash
+        dim_gen_baseline $moduleFilePath -o /etc/dim/digest_list/$module.hash -a $dimHash
         if [ $? -ne 0 ]; then
             echo "Static baseline establishment failed" {{.}}
             return 1
@@ -73,9 +74,9 @@ dim_comm()
         return 1
     fi
 {{if .Signature}}
-    get_usr_input "openssl is about to install?【Y/N】"
+    check_rpm_package openssl
     if [ $? -eq 1 ]; then
-        yum install -y openssl || exit 1
+        return 1
     fi
     get_usr_input "Generate keys and certificates automatically?【Y/N】"
     if [ $? -eq 1 ]; then
