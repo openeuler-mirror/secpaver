@@ -155,7 +155,14 @@ fi
 
 if [[ ${#common_list[@]} -gt 0 || ${#appraise_list[@]} -gt 0 ]]; then
     echo "appraise func=DIGEST_LIST_CHECK appraise_type=imasig|modsig" >> $tmp_policy
-    echo "IMA appraise has been successfully enabled!"
+    echo "IMA appraise has been successfully enabled! If you want to run some executable file which appraised by IMA, you need to 
+1)generate digest list by gen_digest_lists
+2)sign it with evmctl
+3)import it to /sys/kernel/security/digest_list_data. Correspondingly, if you don't want it to be executed, import it to /sys/kernel/security/digest_list_data_del.
+Here is an example:
+1)gen_digest_lists -t metadata -f compact -i l:policy -o add -p -1  -m immutable -i I:/usr/bin/ls -d ./
+2)evmctl ima_sign --key /path/to/ima.key -a sha256 <DIGEST_LIST_PATH>
+3)echo <DIGEST_LIST_PATH> > /sys/kernel/security/ima/digest_list_data"
 fi
 
 if [[ ${#common_list[@]} -gt 0 || ${#measure_list[@]} -gt 0 ]]; then
