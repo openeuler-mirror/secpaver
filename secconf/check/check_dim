@@ -23,6 +23,10 @@ dim_comm()
             return 1
         fi
     elif [ "{{.}}" == "kernel" ]; then
+        if [ ! -f /etc/dim/digest_list/kernel.hash ]; then
+            echo "Error! The policy file doesn't match the configuration file!"
+            return 1
+        fi
         grep "measure obj=KERNEL_TEXT" /etc/dim/policy &> /dev/null
         if [ $? -ne 0 ]; then
             echo "Error! The policy file doesn't match the configuration file!"
@@ -55,9 +59,9 @@ dim_comm()
         echo "Environment doesn't support tpm, measure_pcr configuration is invalid!"
     fi
 {{end}}{{ if .Signature }}
-    get_usr_input "openssl is about to installed?【Y/N】"
+    check_rpm_package openssl
     if [ $? -eq 1 ]; then
-        yum install -y openssl || exit 1
+        return 1
     fi
     echo "Checking whether the certificate is configured..."
     if [ -f /etc/keys/x509_dim.der ]; then

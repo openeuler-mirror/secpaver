@@ -16,9 +16,9 @@ measure_list+=({{.}})
 needReboot=false
 packages=("ima-evm-utils" "digest-list-tools")
 for pkg in "${packages[@]}"; do
-    get_usr_input "${pkg} is about to installed?【Y/N】"
+    check_rpm_package ${pkg}
     if [ $? -eq 1 ]; then
-        yum install -y ${pkg} || exit 1
+        return 1
     fi
 done
 
