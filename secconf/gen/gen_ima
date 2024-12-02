@@ -14,7 +14,7 @@ measure_list+=({{.}})
 {{end}}
 
 needReboot=false
-packages=("ima-evm-utils" "digest-list-tools")
+packages=("ima-evm-utils" "digest-list-tools" "selinux-policy" "selinux-policy-targeted" "policycoreutils")
 for pkg in "${packages[@]}"; do
     check_rpm_package ${pkg}
     if [ $? -eq 1 ]; then
@@ -33,14 +33,14 @@ rm_kernel_param()
     for param in "${@}"; do
         cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
         grub_contains_param=$(grep -q "${param}" "${grub_path}" && echo "true" || echo "false")
-	if [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "true" ]]; then
-	    sed -i "s/ \<${param}\>//g" ${grub_path}
-	    needReboot=true
-	elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
-	    sed -i "s/ \<${param}\>//g" ${grub_path}
-	elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
-	    needReboot=true
-	fi
+        if [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "true" ]]; then
+            sed -i "s/ \<${param}\>//g" ${grub_path}
+            needReboot=true
+        elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
+            sed -i "s/ \<${param}\>//g" ${grub_path}
+        elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
+            needReboot=true
+        fi
     done
 }
 
@@ -60,8 +60,39 @@ set_kernel_param()
     done
 }
 
+set_selinux_type()
+{
+    module_name=$(echo "$1" | awk -F'_' '{print $1 "_" $2}')
+    semodule -l | grep $module_name > /dev/null
+    if [ $? -eq 1 ]; then
+        file=/tmp/${module_name}.cil
+        cat <<EOF > $file
+(type $1)
+(roletype object_r $1)
+(typeattributeset file_type ($1))
+(allow domain $1 (file (append execmod ioctl mounton relabelfrom swapon watch_reads audit_access execute link open relabelto unlink watch_sb create execute_no_trans lock quotaon rename watch watch_with_perm entrypoint getattr map read setattr watch_mount write)))
+EOF
+
+        semodule -i $file
+        echo "selinux type $1 has been successfully created"
+        rm $file
+    fi
+    chcon -t $1 $2
+}
+
+restore_selinux_type()
+{
+    for type in "$@"; do
+        find / -context "*${type}*" -exec restorecon -v {} \; &>/dev/null
+    done
+}
+
 appraise_param=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata")
 measure_param=("ima_digest_list_pcr=11" "ima_template=ima-ng")
+measure_type=ima_measure_bprm_t
+appraise_type=ima_appraise_bprm_t
+all_type=ima_all_bprm_t
+restore_selinux_type $measure_type $appraise_type $all_type
 
 if [[ ${#appraise_list[@]} -eq 0 && ${#measure_list[@]} -eq 0 ]]; then
     rm_kernel_param "${appraise_param[@]}"
@@ -81,27 +112,6 @@ if [[ $needReboot == "true" ]]; then
     echo "IMA startup parameters have been configured! It will take effect by rebooting"
     return 0
 fi
-
-
-set_selinux_type()
-{
-    module_name=$(echo "$1" | awk -F'_' '{print $1 "_" $2}')
-    semodule -l | grep $module_name > /dev/null
-    if [ $? -eq 1 ]; then
-        file=/tmp/${module_name}.cil
-        cat <<EOF > $file
-(type $1)
-(roletype object_r $1)
-(typeattributeset file_type ($1))
-(allow domain $1 (file (append execmod ioctl mounton relabelfrom swapon watch_reads audit_access execute link open relabelto unlink watch_sb create execute_no_trans lock quotaon rename watch watch_with_perm entrypoint getattr map read setattr watch_mount write)))
-EOF
-
-	semodule -i $file
-        echo "selinux type $1 has been successfully created"
-	rm $file
-    fi
-    chcon -t $1 $2
-}
 
 unique() {
     echo "$@" | tr ' ' '\n' | sort -u | tr '\n' ' '
@@ -124,9 +134,6 @@ if [[ ${#common_list[@]} -eq 0 && ${#appraise_list[@]} -eq 0 && ${#measure_list[
     echo "IMA is disabled!"
     return 0
 fi
-measure_type=ima_measure_bprm_t
-appraise_type=ima_appraise_bprm_t
-all_type=ima_all_bprm_t
 
 for measure_file in "${measure_list[@]}"; do
     set_selinux_type $measure_type $measure_file
