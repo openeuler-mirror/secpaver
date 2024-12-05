@@ -1,9 +1,7 @@
 ima_comm()
 {
 {{with .IMA}}
-{{ if and (eq (len .MeasureList) 0) (eq (len .AppraiseList) 0) }}
-echo "IMA is not enabled!"
-{{else}}
+
 if [ ! -d /etc/ima/ ]; then
     echo "The /etc/ima/ directory does not exist. Please confirm whether IMA is supported."
     return 1
@@ -12,7 +10,184 @@ if [[ "$(getenforce)" == "Disabled" ]]; then
     echo "IMA requires selinux to protect specific files. Please make sure selinux is enabled!"
     return 1
 fi
+
+measure_list=()
+appraise_list=()
+common_list=()
+
+{{range .AppraiseList}}
+appraise_list+=({{.}})
 {{end}}
+
+{{range .MeasureList}}
+measure_list+=({{.}})
+{{end}}
+
+if [ -d /sys/firmware/efi ]; then
+    grub_path=/boot/efi/EFI/openeuler/grub.cfg
+else
+    grub_path=/boot/grub2/grub.cfg
+fi
+
+appraise_param=("ima_appraise=enforce" "ima_appraise_digest_list=digest-nometadata")
+measure_param=("ima_digest_list_pcr=11" "ima_template=ima-ng")
+measure_type=ima_measure_bprm_t
+appraise_type=ima_appraise_bprm_t
+all_type=ima_all_bprm_t
+needReboot=false
+needConfigure=false
+
+check_exist_kernel_param()
+{
+    for param in "${@}"; do
+        cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
+        grub_contains_param=$(grep "/vmlinuz-$(uname -r)" "${grub_path}" | grep -q "${param}" && echo "true" || echo "false")
+        if [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "false" ]]; then
+            needReboot=true
+            needConfigure=true
+        elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
+            needConfigure=true
+        elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
+            needReboot=true
+        fi
+    done
+}
+
+check_absent_kernel_param()
+{
+    for param in "${@}"; do
+        cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
+        grub_contains_param=$(grep "/vmlinuz-$(uname -r)" "${grub_path}" | grep -q "${param}" && echo "true" || echo "false")
+        if [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "true" ]]; then
+            needReboot=true
+            needConfigure=true
+        elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
+            needReboot=true
+        elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
+            needConfigure=true
+        fi
+    done
+}
+
+if [[ ${#appraise_list[@]} -eq 0 && ${#measure_list[@]} -eq 0 ]]; then
+    check_absent_kernel_param "${appraise_param[@]}"
+    check_absent_kernel_param "${measure_param[@]}"
+elif [[ ${#appraise_list[@]} -gt 0 && ${#measure_list[@]} -gt 0 ]]; then
+    check_exist_kernel_param "${appraise_param[@]}"
+    check_exist_kernel_param "${measure_param[@]}"
+elif [[ ${#appraise_list[@]} -gt 0 ]]; then
+    check_absent_kernel_param "${measure_param[@]}"
+    check_exist_kernel_param "${appraise_param[@]}"
+else
+    check_absent_kernel_param "${appraise_param[@]}"
+    check_exist_kernel_param "${measure_param[@]}"
+fi
+
+if [[ "$needReboot" == "true" && "$needConfigure" == "true" ]]; then
+    echo "The current IMA related startup parameters are not configured correctly. Please execute the configuration script and then restart to take effect."
+    return 0
+elif [[ "$needReboot" == "true" && "$needConfigure" == "false" ]]; then
+    echo  "The current IMA related startup parameters have been successfully configured. It needs to restart to take effect."
+    return 0
+elif [[ "$needReboot" == "false" && "$needConfigure" == "true" ]]; then
+     echo "The current IMA related start up parameters are valid. But they will become invalid after restarting. It needs to execute configuration script to configure."
+else
+    echo "The current IMA related start up parameters are valid and configured correctly!"
+fi
+
+if [[ ${#appraise_list[@]} -eq 0 && ${#measure_list[@]} -eq 0 ]]; then
+    echo "IMA check completed!"
+    return 0
+fi
+
+needSetSelinuxType=false
+check_selinux_type()
+{
+    SELINUX_LABEL=$(ls -Z "$2" | awk '{print $1}' | awk -F: '{print $3}')
+    if [[ $SELINUX_LABEL != "$1" ]]; then
+        needSetSelinuxType=true
+    fi
+}
+
+unique() {
+    echo "$@" | tr ' ' '\n' | sort -u | tr '\n' ' '
+}
+
+common_elements() {
+    comm -12 <(printf "%s\n" $1 | sort) <(printf "%s\n" $2 | sort)
+}
+
+remove_common() {
+    grep -Fvxf <(printf "%s\n" $2) <(printf "%s\n" $1)
+}
+
+unique_appraise_list=($(unique "${appraise_list[@]}"))
+unique_measure_list=($(unique "${measure_list[@]}"))
+common_list=($(common_elements "${unique_appraise_list[*]}" "${unique_measure_list[*]}"))
+appraise_list=($(remove_common "${unique_appraise_list[*]}" "${common_list[*]}"))
+measure_list=($(remove_common "${unique_measure_list[*]}" "${common_list[*]}"))
+
+
+for measure_file in "${measure_list[@]}"; do
+    check_selinux_type $measure_type $measure_file
+done
+
+for appraise_file in "${appraise_list[@]}"; do
+    check_selinux_type $appraise_type $appraise_file
+done
+
+for common_file in "${common_list[@]}"; do
+    check_selinux_type $all_type $common_file
+done
+
+if [[ $needSetSelinuxType == "true" ]]; then
+    echo "The selinux type of the target files is not configured correctly. Please execute the configuration script to set it."
+    return 0
+else
+    echo "The selinux type of the target files is configured correctly!"
+fi
+
+ima_policy=/sys/kernel/security/ima/policy
+
+if [ -z "$(cat $ima_policy)" ]; then
+    echo "IMA policy is not configured. Please execute the configuration script to configure it."
+    return 0
+fi
+
+needConfigurePolicy=false
+check_ima_policy(){
+    if ! grep -Fxq "$1" "$ima_policy"; then
+        needConfigurePolicy=true
+    fi
+}
+
+if [[ ${#common_list[@]} -gt 0 || ${#appraise_list[@]} -gt 0 ]]; then
+    check_ima_policy "appraise func=DIGEST_LIST_CHECK appraise_type=imasig|modsig"
+fi
+if [[ ${#common_list[@]} -gt 0 || ${#measure_list[@]} -gt 0 ]]; then
+    check_ima_policy  "measure func=DIGEST_LIST_CHECK"
+fi
+
+if [[ ${#common_list[@]} -gt 0 ]]; then
+    check_ima_policy  "appraise func=BPRM_CHECK obj_type=${all_type}"
+    check_ima_policy  "measure func=BPRM_CHECK obj_type=${all_type}"
+fi
+
+if [[ ${#measure_list[@]} -gt 0 ]]; then
+    check_ima_policy "measure func=BPRM_CHECK obj_type=${measure_type}"
+fi
+
+if [[ ${#appraise_list[@]} -gt 0 ]]; then
+    check_ima_policy "appraise func=BPRM_CHECK obj_type=${appraise_type}"
+fi
+
+if [[ "needConfigurePolicy" == "true" ]]; then
+    echo "IMA policy is not configured correctly! Please restart and execute the configuration script to configure it."
+    return 0
+else
+    echo "IMA policy are configured correctly! IMA has been successfully enabled！"
+fi
+
 echo "IMA check completed!"
 {{end}}
 }

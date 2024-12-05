@@ -39,7 +39,7 @@ secure_boot_comm()
     get_usr_input "Whether to enable the secure boot anti-rollback?【Y/N】"
     if [ $? -eq 1 ]; then
         mokutil --set-sbat-policy latest
-        echo "The anti-rollback function has been set and will take effect after restarting."
+        echo "The anti-rollback function has been enabled and will take effect after enabling the secure boot."
     fi
 {{ else }}
     get_usr_input "Whether to disable the secure boot anti-rollback【Y/N】"
