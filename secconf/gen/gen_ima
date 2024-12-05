@@ -32,7 +32,7 @@ rm_kernel_param()
 {
     for param in "${@}"; do
         cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
-        grub_contains_param=$(grep -q "${param}" "${grub_path}" && echo "true" || echo "false")
+        grub_contains_param=$(grep "/vmlinuz-$(uname -r)" "${grub_path}" | grep -q "${param}" && echo "true" || echo "false")
         if [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "true" ]]; then
             sed -i "s/ \<${param}\>//g" ${grub_path}
             needReboot=true
@@ -48,12 +48,12 @@ set_kernel_param()
 {
     for param in "${@}"; do
         cmdline_contains_param=$(grep -q "${param}" /proc/cmdline && echo "true" || echo "false")
-        grub_contains_param=$(grep -q "${param}" "${grub_path}" && echo "true" || echo "false")
+        grub_contains_param=$(grep "/vmlinuz-$(uname -r)" "${grub_path}" | grep -q "${param}" && echo "true" || echo "false")
         if [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "false" ]]; then
-            sed -i "/vmlinuz/ s/$/ ${param}/" "${grub_path}"
+            sed -i "/vmlinuz-$(uname -r)/ s/$/ ${param}/" "${grub_path}"
             needReboot=true
         elif [[ "$cmdline_contains_param" == "true" && "$grub_contains_param" == "false" ]]; then
-            sed -i "/vmlinuz/ s/$/ ${param}/" "${grub_path}"
+            sed -i "/vmlinuz-$(uname -r)/ s/$/ ${param}/" "${grub_path}"
         elif [[ "$cmdline_contains_param" == "false" && "$grub_contains_param" == "true" ]]; then
             needReboot=true
         fi
@@ -109,7 +109,7 @@ else
 fi
 
 if [[ $needReboot == "true" ]]; then
-    echo "IMA startup parameters have been configured! It will take effect by rebooting"
+    echo "IMA startup parameters have been configured! It will take effect by rebooting."
     return 0
 fi
 
