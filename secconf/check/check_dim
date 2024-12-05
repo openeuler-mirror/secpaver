@@ -82,7 +82,7 @@ dim_comm()
     else
         echo "Skip the baseline file consistency check."
     fi
-{{end}}{{ if .BaselineIsEnable }}
+{{end}}
     echo "Checking whether the DIM kernel module is loaded"
     lsmod | grep dim_monitor &> /dev/null
     if [ $? -eq 0 ]; then
@@ -98,6 +98,7 @@ dim_comm()
         echo "Error! dim_core is not loaded!"
         return 1
     fi
+{{ if .BaselineIsEnable }}
     echo "Checking if baseline is configured..."
     cat /sys/kernel/security/dim/monitor_ascii_runtime_measurements | wc -l | grep 2 &> /dev/null
     if [ $? -ne 0 ]; then

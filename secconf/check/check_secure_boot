@@ -16,7 +16,7 @@ secure_boot_comm()
     if [ ! -s /boot/efi/EFI/secure_boot.der ]; then
         get_usr_input "Secure Boot certificate of openeuler is about to be downloaded?【Y/N】"
         if [ $? -eq 1 ]; then
-            wget -O /boot/efi/EFI/secure_boot.der https://www.openeuler.org/certificates/openEuler-x509ca.cer.der --no-check-certificate &> /dev/null
+            wget -O /boot/efi/EFI/secure_boot.der https://www.openeuler.org/certificates/openEuler-x509ca.cer.der --no-check-certificate --timeout=30 --tries=3 &> /dev/null
             if [ $? -ne 0 ]; then
                 echo "Secure Boot cerificate download failed，Please obtain the certificate in other ways"
                 return 1

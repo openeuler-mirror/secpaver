@@ -6,14 +6,14 @@ modsign_comm()
     else
         grub_path="/boot/efi/EFI/openEuler/grub.cfg"
     fi
-    grep sig_enforce $grub_path &> /dev/null
+    grep "vmlinuz-$(uname -r) .*sig_enforce" $grub_path &> /dev/null
 {{ if .Enable }}
     if [ $? -eq 0 ]; then
         echo "Kernel module verification has been set and does not need to be set again."
     else
         get_usr_input "Check whether the grub.cfg file is modified to enable forcible signature verification in the kernel.【Y/N】"
         if [ $? -eq 1 ]; then
-            sed -i '/vmlinuz/s/$/ module\.sig_enforce/' $grub_path
+            sed -i "/vmlinuz-$(uname -r)/ s/$/ module\.sig_enforce/" "${grub_path}"
             if [ $? -eq 0 ]; then
                 echo "The kernel module verification is successful when the OS is started. The verification takes effect after the OS is restarted."
             else
